@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Centro de Saque - edxx{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
+<div class="withdraw-viewport">
+    <div class="glow-bg"></div>
+    <div class="glow-sphere"></div>
+
+    <div class="withdraw-dashboard">
+        
+        {# NAV TOPO #}
+        <div class="top-nav-withdraw">
+            <a href="javascript:history.back()" class="btn-back-glass">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </a>
+            <span class="nav-title">CENTRO DE LEVANTAMENTO</span>
+        </div>
+
+        {# CARD DE SALDO - MEDICAL GLOW PREMIUM #}
+        <div class="balance-card-glow">
+            <div class="balance-info">
+                <span class="label">SALDO DISPONÍVEL</span>
+                <h2 class="value">KZ {{ request.user.available_balance|default:"0.00" }}</h2>
+            </div>
+            <div class="balance-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M12 8v8M8 12h8"></path></svg>
+            </div>
+        </div>
+
+        {# FORMULÁRIO DE DIGITAÇÃO #}
+        <div class="glass-container main-action-card">
+            <form method="post" id="form-saque">
+                {% csrf_token %}
+                <input type="hidden" name="withdrawal_method" value="BANCO"> 
+                
+                <div class="input-section">
+                    <label class="premium-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; vertical-align:middle; margin-right:4px;"><path d="m18 2 4 4M13 7l4 4M9 11l4 4M5 19l-3 3M14 4l.5.5M7 11l.5.5M11 7l.5.5"></path></svg>
+                        Quanto deseja levantar?
+                    </label>
+                    <div class="custom-input-group">
+                        <span class="currency-tag">KZ</span>
+                        <input type="number" name="amount" id="id_amount" step="0.01" required placeholder="0.00">
+                    </div>
+                </div>
+
+                <div id="tax-display" class="tax-info-glass">
+                    <div class="tax-line">
+                        <span>Taxa Admin (10%)</span>
+                        <span id="tax-val">0.00 KZ</span>
+                    </div>
+                    <div class="tax-line total">
+                        <span>Líquido a Receber</span>
+                        <span id="net-val">0.00 KZ</span>
+                    </div>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert-premium {{ message.tags }}">
+                            {% if 'success' in message.tags %}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-right:6px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            {% else %}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-right:6px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            {% endif %}
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <button type="submit" class="btn-confirm-saque">
+                    CONFIRMAR SAQUE 
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;margin-left:6px;display:inline-block;vertical-align:middle;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+            </form>
+        </div>
+
+        {# SEÇÃO EXTRATO #}
+        <div class="extrato-container">
+            <div class="extrato-header">
+                <h3>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;color:var(--medical-teal);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    EXTRATO DE SAQUES
+                </h3>
+            </div>
+
+            <div class="extrato-list">
+                {% if withdrawal_records %}
+                    {% for w in withdrawal_records %}
+                    <div class="extrato-card">
+                        <div class="card-header">
+                            <div class="id-info">
+                                <span class="id-tag">REF: #{{ w.id }}</span>
+                                <span class="day-tag">{{ w.created_at|date:"l" }}</span>
+                            </div>
+                            <div class="status-pill {% if w.status == 'Aprovado' %}st-success{% elif w.status == 'Pendente' %}st-pending{% else %}st-error{% endif %}">
+                                {% if w.status == 'Aprovado' %}
+                                    <span class="indicator-dot"></span> SUCESSO
+                                {% elif w.status == 'Pendente' %}
+                                    <span class="indicator-dot loading-pulse"></span> PROCESSANDO
+                                {% else %}
+                                    <span class="indicator-dot"></span> REJEITADO
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <small>Valor Solicitado</small>
+                                    <strong>KZ {{ w.amount }}</strong>
+                                </div>
+                                <div class="info-item">
+                                    <small>Conta de Destino (IBAN)</small>
+                                    <span class="iban-text">{{ w.user.bank_details.IBAN|default:"Não configurado" }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <span>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:3px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                {{ w.created_at|date:"d/m - H:i" }}
+                            </span>
+                            {% if w.status == 'Aprovado' %}
+                            <span class="success-time">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                Compensado: {{ w.updated_at|date:"H:i" }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:40px;height:40px;margin-bottom:10px;opacity:0.4;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        <p>Nenhum registro de transações encontrado.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ART CROMÁTICA - edxx E LAB PREMIUM DEEP */
+    body {
+        background: #071e22; /* Fundo cirúrgico profundo escuro */
+        background-attachment: fixed;
+        min-height: 100vh;
+        color: #e6f1f0;
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        overflow-x: hidden;
+    }
+
+    /* Brilhos Clínicos Tridimensionais */
+    .glow-bg {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at 50% -25%, #00b894 0%, transparent 65%);
+        z-index: -1;
+        opacity: 0.25;
+    }
+    .glow-sphere {
+        position: fixed;
+        bottom: -15%; right: -15%;
+        width: 350px; height: 350px;
+        background: #0984e3;
+        filter: blur(140px);
+        z-index: -1;
+        opacity: 0.15;
+    }
+
+    .withdraw-viewport { padding: 24px 14px; display: flex; justify-content: center; position: relative; }
+    .withdraw-dashboard { width: 100%; max-width: 450px; }
+
+    /* TOPO NAVEGAÇÃO */
+    .top-nav-withdraw { display: flex; align-items: center; margin-bottom: 24px; }
+    .btn-back-glass { 
+        width: 40px; height: 40px; background: rgba(255,255,255,0.04); 
+        border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        color: #00b894; border: 1px solid rgba(0, 184, 148, 0.2); text-decoration: none;
+    }
+    .btn-back-glass svg { width: 16px; height: 16px; }
+    .nav-title { margin-left: 15px; font-weight: 700; letter-spacing: 0.5px; color: #ffffff; font-size: 0.9rem; }
+
+    /* CARD SALDO DISPONÍVEL EXCLUSIVO */
+    .balance-card-glow {
+        background: linear-gradient(135deg, rgba(10, 61, 66, 0.85), rgba(0, 184, 148, 0.15));
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 184, 148, 0.35);
+        padding: 22px; border-radius: 24px; margin-bottom: 24px;
+        display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+    }
+    .balance-info .label { font-size: 0.65rem; color: #00b894; font-weight: 700; letter-spacing: 1.5px; }
+    .balance-info .value { font-size: 1.8rem; margin: 4px 0 0 0; font-weight: 900; text-shadow: 0 0 15px rgba(0, 184, 148, 0.3); color: #ffffff; }
+    .balance-icon-box { background: rgba(0, 184, 148, 0.12); width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #00b894; }
+    .balance-icon-box svg { width: 22px; height: 22px; }
+
+    /* CONTAINER PRINCIPAL DO FORMULÁRIO */
+    .glass-container {
+        background: rgba(10, 61, 66, 0.4);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 24px; border: 1px solid rgba(255,255,255,0.06);
+        padding: 22px; box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    }
+    .premium-label { color: #00b894; font-size: 0.8rem; font-weight: 700; margin-bottom: 12px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .custom-input-group {
+        background: rgba(4, 18, 21, 0.6); border-radius: 16px; padding: 14px 18px;
+        display: flex; align-items: center; border: 1px solid rgba(0, 184, 148, 0.25);
+        transition: border-color 0.3s ease;
+    }
+    .custom-input-group:focus-within { border-color: #00b894; }
+    .currency-tag { font-weight: 900; color: #00b894; margin-right: 12px; font-size: 1.2rem; }
+    .custom-input-group input { background: transparent; border: none; color: white; font-size: 1.4rem; font-weight: 700; width: 100%; outline: none; font-family: 'Montserrat', sans-serif; }
+
+    /* PAINEL DE TAXAS DINÂMICAS */
+    .tax-info-glass { margin-top: 18px; background: rgba(255, 255, 255, 0.03); padding: 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.03); }
+    .tax-line { display: flex; justify-content: space-between; font-size: 0.75rem; color: #9bb1af; margin-bottom: 6px; }
+    .tax-line.total { color: #0984e3; font-size: 0.85rem; font-weight: 700; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; }
+
+    /* BOTÃO SUBMIT PROFISSONAL */
+    .btn-confirm-saque {
+        width: 100%; margin-top: 22px; padding: 16px; border-radius: 16px;
+        background: linear-gradient(90deg, #00b894, #028a6e); color: white;
+        border: none; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px; cursor: pointer; transition: 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3); text-transform: uppercase;
+        font-family: 'Montserrat', sans-serif;
+    }
+    .btn-confirm-saque:active { transform: scale(0.97); opacity: 0.9; }
+
+    /* HISTÓRICO / CARDS DE EXTRATO ILUSTRATIVOS */
+    .extrato-container { margin-top: 36px; }
+    .extrato-header h3 { font-size: 0.8rem; color: #ffffff; letter-spacing: 1px; font-weight: 700; margin-bottom: 16px; }
+    
+    .extrato-card {
+        background: rgba(10, 61, 66, 0.3); border: 1px solid rgba(255,255,255,0.04);
+        border-radius: 18px; padding: 16px; margin-bottom: 12px;
+        border-left: 4px solid #0984e3; /* Barra lateral clínica padrão */
+    }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .id-tag { display: block; font-size: 0.65rem; color: #00b894; font-weight: 700; }
+    .day-tag { font-size: 0.75rem; font-weight: 400; opacity: 0.5; text-transform: capitalize; }
+    
+    /* Pílulas de Status Baseadas em Design de Laboratório */
+    .status-pill { font-size: 0.6rem; font-weight: 700; padding: 4px 10px; border-radius: 8px; display: flex; align-items: center; gap: 4px; letter-spacing: 0.3px; }
+    .indicator-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+    
+    .st-success { background: rgba(0, 184, 148, 0.1); color: #00b894; border: 1px solid rgba(0, 184, 148, 0.2); }
+    .st-success .indicator-dot { background: #00b894; }
+    
+    .st-pending { background: rgba(9, 132, 227, 0.1); color: #0984e3; border: 1px solid rgba(9, 132, 227, 0.2); }
+    .st-pending .indicator-dot { background: #0984e3; }
+    
+    .st-error { background: rgba(214, 48, 49, 0.1); color: #d63031; border: 1px solid rgba(214, 48, 49, 0.2); }
+    .st-error .indicator-dot { background: #d63031; }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .info-item small { display: block; font-size: 0.58rem; color: #9bb1af; margin-bottom: 3px; text-transform: uppercase; }
+    .info-item strong { font-size: 0.95rem; color: #ffffff; font-weight: 700; }
+    .iban-text { font-size: 0.72rem; color: #a5bdbb; font-weight: 600; display: block; word-break: break-all; }
+
+    .card-footer { 
+        margin-top: 14px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.03);
+        display: flex; justify-content: space-between; font-size: 0.68rem; opacity: 0.5;
+    }
+    .success-time { color: #00b894; opacity: 1; font-weight: 700; }
+
+    /* ALERTAS DE FLUXO PREMIUM */
+    .alert-premium { padding: 12px; border-radius: 12px; font-size: 0.75rem; margin-top: 14px; font-weight: 700; text-align: center; display: flex; align-items: center; justify-content: center; }
+    .alert-premium.error { background: rgba(214, 48, 49, 0.12); color: #ff7675; border: 1px solid rgba(214, 48, 49, 0.2); }
+    .alert-premium.success { background: rgba(0, 184, 148, 0.12); color: #00b894; border: 1px solid rgba(0, 184, 148, 0.2); }
+
+    .empty-state { text-align: center; padding: 40px 0; color: #9bb1af; opacity: 0.6; font-size: 0.75rem; }
+    
+    /* Efeito Pulse para carregamento clínico */
+    @keyframes pulse {
+        0% { opacity: 0.4; }
+        50% { opacity: 1; }
+        100% { opacity: 0.4; }
+    }
+    .loading-pulse { animation: pulse 1.5s infinite ease-in-out; }
+</style>
+
+<script>
+    const amountInput = document.getElementById('id_amount');
+    const taxVal = document.getElementById('tax-val');
+    const netVal = document.getElementById('net-val');
+
+    amountInput.addEventListener('input', function() {
+        let val = parseFloat(this.value);
+        if (val > 0) {
+            let tax = val * 0.10;
+            let net = val - tax;
+            taxVal.innerText = tax.toFixed(2) + " KZ";
+            netVal.innerText = net.toFixed(2) + " KZ";
+        } else {
+            taxVal.innerText = "0.00 KZ";
+            netVal.innerText = "0.00 KZ";
+        }
+    });
+</script>
+{% endblock %}

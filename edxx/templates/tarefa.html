@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}edxx | Publicidade Profissional{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+
+<div class="ads-viewport">
+    <div class="vibrant-bg"></div>
+
+    <div class="ads-container">
+        
+        {# HEADER COM VOLTAR #}
+        <div class="ads-header">
+            <a href="{% url 'menu' %}" class="back-link">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <h1 class="header-title">CENTRAL DE TAREFAS</h1>
+            <div style="width: 24px;"></div>
+        </div>
+
+        {# NAVEGAÇÃO DE PASSOS (ESTÁTICA NO TOPO) #}
+        <div class="step-nav">
+            <div class="nav-item active" id="nav-link" onclick="handleNavClick('step-links')">
+                <i class="fas fa-link"></i>
+                <span>Link</span>
+            </div>
+            <div class="nav-item" id="nav-upload">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Upload</span>
+            </div>
+            <div class="nav-item" id="nav-pending" onclick="handleNavClick('step-pending')">
+                <i class="fas fa-history"></i>
+                <span>Pendente</span>
+            </div>
+            <div class="nav-item" id="nav-done" onclick="handleNavClick('step-done')">
+                <i class="fas fa-check-double"></i>
+                <span>Concluído</span>
+            </div>
+        </div>
+
+        {# CONTEÚDO PRINCIPAL #}
+        <div class="ads-card glass-effect">
+            
+            {# FASE 1: LINKS #}
+            <div id="step-links" class="ad-step active">
+                <div class="step-info">
+                    <h3>Missões de Hoje</h3>
+                    <p>Acesse um link abaixo para começar a publicidade.</p>
+                </div>
+                <div class="social-mission-list">
+                    <a href="https://www.tiktok.com" target="_blank" class="mission-item tiktok" onclick="goToUpload()">
+                        <div class="social-icon"><i class="fab fa-tiktok"></i></div>
+                        <div class="social-name">Publicidade TikTok</div>
+                        <span class="status-tag">Disponível</span>
+                    </a>
+                    <a href="https://www.facebook.com" target="_blank" class="mission-item facebook" onclick="goToUpload()">
+                        <div class="social-icon"><i class="fab fa-facebook-f"></i></div>
+                        <div class="social-name">Publicidade Facebook</div>
+                        <span class="status-tag">Disponível</span>
+                    </a>
+                </div>
+            </div>
+
+            {# FASE 2: UPLOAD #}
+            <div id="step-upload" class="ad-step">
+                <div class="step-info">
+                    <h3>Carregar Comprovativo</h3>
+                    <p>Sua captura de tela aparecerá aqui antes de enviar.</p>
+                </div>
+                <div class="upload-area" onclick="document.getElementById('task-file').click()">
+                    <input type="file" id="task-file" hidden accept="image/*" onchange="handlePreview(event)">
+                    <div id="up-placeholder">
+                        <div class="pulse-icon"><i class="fas fa-image"></i></div>
+                        <p>Clique para selecionar print</p>
+                    </div>
+                    <img id="img-preview" class="preview-img" style="display:none;">
+                </div>
+                <button id="btn-submit" class="btn-main disabled" disabled onclick="submitTask()">ENVIAR PARA ANÁLISE</button>
+            </div>
+
+            {# FASE 3: PENDENTE #}
+            <div id="step-pending" class="ad-step text-center">
+                <div class="pending-card">
+                    <div class="mini-frame">
+                        <img id="final-preview" src="{% static 'images/placeholder.jpg' %}">
+                        <div class="badge-pending">EM ANÁLISE</div>
+                    </div>
+                    <div class="timer-box">
+                        <i class="fas fa-hourglass-half fa-spin"></i>
+                        <span>Aguarde 2-3 minutos</span>
+                    </div>
+                    <h3>Sincronizando Saldo...</h3>
+                    <p>Sua tarefa está na fila de verificação. Você já pode voltar ao menu principal.</p>
+                    <a href="{% url 'menu' %}" class="btn-outline">IR PARA O MENU</a>
+                </div>
+            </div>
+
+            {# FASE 4: CONCLUÍDO #}
+            <div id="step-done" class="ad-step text-center">
+                <div class="success-box">
+                    <div class="check-anim">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Tudo Pronto!</h3>
+                    <p>Sua tarefa diária foi validada e o valor creditado.</p>
+                    <div class="task-history-item">
+                        <span>Tarefa Publicidade</span>
+                        <span class="val-tag">CONCLUÍDO</span>
+                    </div>
+                    <a href="{% url 'menu' %}" class="btn-main">VOLTAR AO INÍCIO</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --bg: #050505;
+        --accent: #8e44ad;
+        --glass: rgba(255, 255, 255, 0.05);
+        --text-dim: #b3b3b3;
+    }
+
+    body { background: var(--bg); font-family: 'Montserrat', sans-serif; color: white; margin: 0; }
+    .vibrant-bg { position: fixed; width: 100vw; height: 100vh; background: radial-gradient(circle at top right, #2c003e, transparent); z-index: -1; }
+    .ads-container { max-width: 450px; margin: 0 auto; padding: 20px; }
+    
+    .ads-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .header-title { font-size: 0.8rem; letter-spacing: 2px; font-weight: 800; color: var(--accent); }
+
+    /* STEP NAVIGATION */
+    .step-nav { display: flex; justify-content: space-between; background: var(--glass); border-radius: 20px; padding: 10px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); }
+    .nav-item { flex: 1; text-align: center; font-size: 0.6rem; opacity: 0.4; transition: 0.3s; cursor: pointer; }
+    .nav-item i { display: block; font-size: 1.1rem; margin-bottom: 4px; }
+    .nav-item.active { opacity: 1; color: var(--accent); }
+
+    /* CARD STYLE */
+    .glass-effect { background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(15px); border-radius: 30px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); min-height: 400px; }
+    .ad-step { display: none; }
+    .ad-step.active { display: block; animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .step-info h3 { font-size: 1.2rem; margin-bottom: 5px; }
+    .step-info p { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 25px; }
+
+    /* MISSIONS */
+    .mission-item { display: flex; align-items: center; background: rgba(255,255,255,0.03); padding: 18px; border-radius: 20px; text-decoration: none; color: white; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
+    .social-icon { width: 40px; font-size: 1.4rem; }
+    .social-name { flex: 1; font-weight: 600; font-size: 0.85rem; }
+    .status-tag { font-size: 0.6rem; background: #27ae60; padding: 3px 8px; border-radius: 5px; }
+
+    /* UPLOAD */
+    .upload-area { width: 100%; height: 220px; border: 2px dashed rgba(142, 68, 173, 0.3); border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; background: rgba(142, 68, 173, 0.05); margin-bottom: 20px; }
+    .preview-img { width: 100%; height: 100%; object-fit: cover; }
+    .pulse-icon { font-size: 2.5rem; color: var(--accent); animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+    /* PENDENTE */
+    .mini-frame { width: 110px; height: 150px; margin: 0 auto 20px; position: relative; border-radius: 12px; overflow: hidden; border: 2px solid var(--accent); }
+    .mini-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .badge-pending { position: absolute; bottom: 0; width: 100%; background: var(--accent); font-size: 0.6rem; padding: 4px 0; font-weight: 800; }
+    .timer-box { color: #f1c40f; font-size: 0.8rem; margin-bottom: 15px; font-weight: 700; }
+
+    /* BUTTONS */
+    .btn-main { width: 100%; padding: 18px; border-radius: 18px; border: none; background: var(--accent); color: white; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px rgba(142, 68, 173, 0.2); }
+    .btn-main.disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-outline { display: inline-block; margin-top: 15px; color: var(--text-dim); text-decoration: none; font-size: 0.75rem; border-bottom: 1px solid var(--text-dim); }
+    .text-center { text-align: center; }
+</style>
+
+<script>
+    // Início: Verifica o estado inicial pelo Django
+    document.addEventListener("DOMContentLoaded", () => {
+        const completed = {{ tasks_completed_today|default:0 }};
+        if (completed >= 1) {
+            switchTab('step-done', 'nav-done');
+        }
+    });
+
+    function switchTab(stepId, navId) {
+        document.querySelectorAll('.ad-step').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        
+        document.getElementById(stepId).classList.add('active');
+        document.getElementById(navId).classList.add('active');
+    }
+
+    // Só permite trocar de aba manualmente para Pendente ou Concluído se estiverem ativos
+    function handleNavClick(stepId) {
+        if (stepId === 'step-links' && {{ tasks_completed_today|default:0 }} == 0) {
+            switchTab('step-links', 'nav-link');
+        }
+    }
+
+    function goToUpload() {
+        setTimeout(() => {
+            switchTab('step-upload', 'nav-upload');
+        }, 1500); // Dá tempo do usuário clicar no link
+    }
+
+    function handlePreview(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const img = document.getElementById('img-preview');
+            const placeholder = document.getElementById('up-placeholder');
+            const finalImg = document.getElementById('final-preview');
+            
+            img.src = reader.result;
+            finalImg.src = reader.result;
+            img.style.display = 'block';
+            placeholder.style.display = 'none';
+
+            const btn = document.getElementById('btn-submit');
+            btn.classList.remove('disabled');
+            btn.disabled = false;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function submitTask() {
+        const btn = document.getElementById('btn-submit');
+        btn.innerText = "Sincronizando...";
+        btn.disabled = true;
+
+        // Requisição POST real para sua views.py
+        fetch("{% url 'process_task' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                switchTab('step-pending', 'nav-pending');
+            } else {
+                alert(data.message);
+                location.reload();
+            }
+        });
+    }
+</script>
+{% endblock %}

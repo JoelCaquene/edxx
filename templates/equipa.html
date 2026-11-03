@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Estrutura dos Agentes | edxx{% endblock %}
+
+{% block content %}
+<div class="equipa-container">
+    
+    {# TOPO NAVEGAÇÃO #}
+    <div class="top-header">
+        <a href="{% url 'menu' %}" class="btn-back">
+            <!-- Ícone Seta Esquerda SVG -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </a>
+        <h1 class="page-title">ESTRUTURA DOS AGENTES</h1>
+        <div style="width: 38px;"></div>
+    </div>
+
+    {# INDICADORES DE CONTABILIDADE (ESTILO CLÍNICO) #}
+    <div class="stats-grid">
+        <div class="stat-card medical-card">
+            <div class="stat-icon bg-light-blue">
+                <!-- Ícone Usuários/Membros SVG -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-value">{{ level_a_count }}</span>
+                <span class="stat-label">Membros</span>
+            </div>
+        </div>
+        <div class="stat-card medical-card">
+            <div class="stat-icon bg-light-green">
+                <!-- Ícone Atividade/Sucesso Clínico SVG -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-value">{{ level_a_investors }}</span>
+                <span class="stat-label">Investidores</span>
+            </div>
+        </div>
+    </div>
+
+    {# LINK DE CONVITE PRESTIGIOSO #}
+    <div class="invite-section medical-card">
+        <div class="invite-header">
+            <!-- Ícone Link/Cápsula SVG -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            <span>Link de Convite Individual</span>
+        </div>
+        <div class="invite-box">
+            <span id="invite-link-text">{{ invite_link }}</span>
+            <button onclick="copyInvite()" id="btn-copy">
+                <!-- Ícone Copiar SVG -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+        </div>
+        <div class="instruction-box">
+            <p><strong>Aviso edxx:</strong> Copie o seu link de convite e envie às pessoas próximas. Ganhe <strong>15%</strong> por cada convite bem-sucedido dos seus agentes.</p>
+        </div>
+    </div>
+
+    {# LISTA DE AGENTES (FILTRADA PARA PAGOS) #}
+    <div class="team-list-section">
+        <h2 class="section-title">MEUS AGENTES ATIVOS</h2>
+        
+        <div class="member-list">
+            {% for member in level_a %}
+                {% with active_level=member.userlevel_set.filter.first %}
+                {% if active_level and active_level.is_active %}
+                    <div class="member-card medical-card">
+                        <div class="member-main-info">
+                            <div class="member-avatar">
+                                <!-- Ícone Estetoscópio / edxx SVG -->
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2.5 3.19-2.5 5.5s1 4.24 2.5 5.5M19.5 16.5c1.5 1.26 2.5 3.19 2.5 5.5s-1 4.24-2.5 5.5M12 2v10M12 12a5 5 0 0 1-5-5M12 12a5 5 0 0 0 5-5"></svg>
+                            </div>
+                            <div class="member-details">
+                                <span class="m-id">{{ member.phone_number }}</span>
+                                <span class="m-date">Desde: {{ active_level.purchase_date|date:"d/m/Y" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="member-status-area">
+                            <div class="m-badge">{{ active_level.level.name }}</div>
+                            <div class="task-indicator">
+                                {% if member.task_set.last.completed_at|date:"Y-m-d" == today|date:"Y-m-d" or member.task_set.last.task_day|date:"Y-m-d" == today|date:"Y-m-d" %}
+                                    <span class="task-done">✔ Feito</span>
+                                {% else %}
+                                    <span class="task-pending">⏳ Pendente</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% endwith %}
+            {% empty %}
+                <div class="empty-state medical-card">
+                    <p>Nenhum investidor ativo nível 1.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --medical-teal: #00b894;
+        --medical-dark: #0a3d42;
+        --medical-blue: #0984e3;
+        --bg-body: #f4f7f6;
+        --card-shadow: 0 4px 14px rgba(10, 61, 66, 0.05);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+        background-color: var(--bg-body) !important;
+        color: #2c3e50;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        overflow-x: hidden;
+    }
+
+    .equipa-container {
+        width: 100%;
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 20px 12px 100px;
+    }
+
+    /* Topo */
+    .top-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 22px;
+    }
+    .btn-back {
+        width: 38px;
+        height: 38px;
+        background: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--medical-dark);
+        text-decoration: none;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(10, 61, 66, 0.05);
+    }
+    .btn-back svg {
+        width: 18px;
+        height: 18px;
+    }
+    .page-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--medical-dark);
+        margin: 0;
+    }
+
+    /* Cards edxxs */
+    .medical-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(10, 61, 66, 0.06);
+        box-shadow: var(--card-shadow);
+    }
+
+    /* Indicadores */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .stat-card {
+        padding: 14px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .stat-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    .bg-light-blue { background: rgba(9, 132, 227, 0.1); color: var(--medical-blue); }
+    .bg-light-green { background: rgba(0, 184, 148, 0.1); color: var(--medical-teal); }
+    
+    .stat-value { display: block; font-size: 1.2rem; font-weight: 700; color: var(--medical-dark); }
+    .stat-label { font-size: 0.68rem; color: #7f8c8d; font-weight: 600; text-transform: uppercase; }
+
+    /* Seção do Link de Convite */
+    .invite-section { padding: 16px; margin-bottom: 24px; }
+    .invite-header { 
+        font-size: 0.8rem; 
+        font-weight: 700; 
+        margin-bottom: 12px; 
+        color: var(--medical-dark); 
+        display: flex; 
+        align-items: center; 
+        gap: 6px; 
+    }
+    .invite-header svg { width: 15px; height: 15px; color: var(--medical-teal); }
+    
+    .invite-box {
+        display: flex;
+        background: #f8faf9;
+        padding: 12px;
+        border-radius: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        border: 1px dashed rgba(0, 184, 148, 0.3);
+    }
+    #invite-link-text {
+        font-size: 0.78rem;
+        color: #34495e;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 82%;
+        font-weight: 500;
+    }
+    #btn-copy { 
+        background: none; 
+        border: none; 
+        color: var(--medical-teal); 
+        cursor: pointer;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+    }
+    #btn-copy svg { width: 18px; height: 18px; }
+    .instruction-box p { 
+        font-size: 0.72rem; 
+        line-height: 1.4; 
+        color: #7f8c8d; 
+        margin: 0; 
+    }
+
+    /* Lista de Membros */
+    .section-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 14px;
+        color: var(--medical-dark);
+        border-left: 3.5px solid var(--medical-teal);
+        padding-left: 8px;
+    }
+    .member-card {
+        padding: 14px 12px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 4px solid var(--medical-blue);
+    }
+    .member-main-info { display: flex; align-items: center; gap: 10px; }
+    .member-avatar {
+        width: 38px;
+        height: 38px;
+        background: rgba(10, 61, 66, 0.06);
+        color: var(--medical-dark);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .member-avatar svg { width: 18px; height: 18px; color: var(--medical-dark); }
+    .m-id { font-weight: 700; font-size: 0.88rem; color: #2c3e50; display: block; }
+    .m-date { font-size: 0.65rem; color: #95a5a6; font-weight: 500; }
+
+    .member-status-area { text-align: right; }
+    .m-badge {
+        font-size: 0.6rem;
+        background: rgba(0, 184, 148, 0.1);
+        color: var(--medical-teal);
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 700;
+        display: inline-block;
+    }
+    .task-indicator { font-size: 0.68rem; margin-top: 5px; font-weight: 600; }
+    .task-done { color: var(--medical-teal); }
+    .task-pending { color: #e74c3c; }
+
+    .empty-state { 
+        text-align: center; 
+        padding: 35px; 
+        color: #95a5a6; 
+        font-size: 0.8rem; 
+    }
+</style>
+
+<script>
+    function copyInvite() {
+        const text = document.getElementById('invite-link-text').innerText;
+        const btn = document.getElementById('btn-copy');
+        navigator.clipboard.writeText(text).then(() => {
+            // Ícone de Sucesso Inline
+            btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--medical-teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            setTimeout(() => { 
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>'; 
+            }, 2000);
+        });
+    }
+</script>
+{% endblock %}

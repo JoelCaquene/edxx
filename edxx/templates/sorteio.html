@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+
+<div class="sorteio-wrapper">
+    <a href="{% url 'menu' %}" class="btn-voltar-clean">
+        <i class="fas fa-chevron-left"></i>
+    </a>
+
+    <div class="container main-container">
+        <div class="header-section text-center">
+            <h1 class="title-premium">CENTRO DE RESGATE</h1>
+            <p class="subtitle">INSIRA O SEU CÓDIGO DE SORTEIO DIÁRIO</p>
+        </div>
+
+        <div class="resgate-card">
+            <div class="input-container-centered">
+                <div class="input-box">
+                    <i class="fas fa-ticket-alt input-icon"></i>
+                    <input type="text" id="promo-code-input" placeholder="DIGITE O CÓDIGO..." maxlength="30" autocomplete="off">
+                </div>
+            </div>
+            
+            <button id="btn-resgatar">
+                <span class="btn-text">RESGATAR SORTE</span>
+                <i class="fas fa-bolt"></i>
+            </button>
+
+            <div id="status-msg" class="status-msg"></div>
+        </div>
+
+        <div class="winners-container">
+            <h5 class="winners-title">
+                <span class="dot-live"></span> ÚLTIMOS PREMIADOS
+            </h5>
+            <div class="ticker-wrapper">
+                <div class="ticker-scroll" id="ticker-list">
+                    {% for usage in recent_winners %}
+                    <div class="ticker-item">
+                        <div class="user-info">
+                            <i class="fas fa-user-circle"></i>
+                            <span>ID: ****{{ usage.user.phone_number|slice:"-4:" }}</span>
+                        </div>
+                        <div class="prize-info">
+                            <span class="action">ganhou</span>
+                            <span class="value">{{ usage.prize_won|floatformat:2 }} KZ</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="ticker-item justify-content-center">Aguardando novos ganhadores...</div>
+                    {% endfor %}
+                    {% for usage in recent_winners %}
+                    <div class="ticker-item">
+                        <div class="user-info">
+                            <i class="fas fa-user-circle"></i>
+                            <span>ID: ****{{ usage.user.phone_number|slice:"-4:" }}</span>
+                        </div>
+                        <div class="prize-info">
+                            <span class="action">ganhou</span>
+                            <span class="value">{{ usage.prize_won|floatformat:2 }} KZ</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="win-overlay" class="win-overlay">
+    <div class="win-modal">
+        <i class="fas fa-trophy trophy-icon"></i>
+        <h2>VOCÊ GANHOU!</h2>
+        <div class="prize-amount"><span id="prize-val">0</span> <small>KZ</small></div>
+        <p>O prêmio foi creditado na sua conta com sucesso.</p>
+        <button onclick="location.reload()" class="btn-fechar">COLETAR</button>
+    </div>
+</div>
+
+<audio id="snd-success" src="https://www.myinstants.com/media/sounds/tada.mp3"></audio>
+<audio id="snd-error" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+<audio id="snd-ambient" loop src="https://www.soundjay.com/free-music/sounds/dream-raid-01.mp3"></audio>
+
+<style>
+    :root {
+        --lilac: #8e44ad;
+        --gold-light: #f1c40f;
+        --gold-dark: #d4af37;
+        --bg-dark: #120d1a;
+    }
+
+    body {
+        background-color: var(--bg-dark);
+        color: #fff;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        overflow-x: hidden;
+    }
+
+    .sorteio-wrapper {
+        min-height: 100vh;
+        background: radial-gradient(circle at top, #2d1b4d 0%, #120d1a 100%);
+        padding: 60px 20px;
+        position: relative;
+    }
+
+    /* Botão Voltar Clean */
+    .btn-voltar-clean {
+        position: absolute;
+        top: 25px;
+        left: 20px;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(241, 196, 15, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gold-light);
+        text-decoration: none;
+        z-index: 100;
+    }
+
+    .title-premium {
+        font-weight: 900;
+        background: linear-gradient(to bottom, #fff, var(--gold-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-top: 20px;
+    }
+
+    /* Card e Input Centralizado */
+    .resgate-card {
+        background: rgba(45, 27, 77, 0.4);
+        border: 2px solid var(--gold-dark);
+        border-radius: 25px;
+        padding: 30px;
+        max-width: 400px;
+        margin: 30px auto;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .input-container-centered {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .input-box {
+        position: relative;
+        width: 100%;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gold-light);
+    }
+
+    .input-box input {
+        width: 100%;
+        box-sizing: border-box; /* Garante que o padding não quebre a largura */
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 15px 15px 15px 45px;
+        border-radius: 12px;
+        color: var(--gold-light);
+        font-size: 1rem;
+        font-weight: bold;
+        outline: none;
+        text-align: center;
+    }
+
+    #btn-resgatar {
+        width: 100%;
+        background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+        color: #120d1a;
+        border: none;
+        padding: 15px;
+        border-radius: 12px;
+        font-weight: 900;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Animação de Subida (Ticker) */
+    .ticker-wrapper {
+        background: rgba(0, 0, 0, 0.2);
+        height: 150px;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .ticker-scroll {
+        display: flex;
+        flex-direction: column;
+        animation: scrollUp 15s linear infinite;
+    }
+
+    @keyframes scrollUp {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-50%); }
+    }
+
+    .ticker-item {
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+    }
+
+    .status-msg { margin-top: 15px; font-size: 0.85rem; height: 20px; }
+
+    /* Modal Vitória */
+    .win-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.85);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .win-modal {
+        background: #1e1430;
+        border: 2px solid var(--gold-light);
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+        width: 85%;
+        max-width: 320px;
+    }
+
+    .trophy-icon { font-size: 3rem; color: var(--gold-light); }
+    .prize-amount { font-size: 2.5rem; font-weight: 900; color: #fff; margin: 10px 0; }
+</style>
+
+<script>
+// Ativar som ambiente no primeiro clique
+document.addEventListener('click', function() {
+    const ambient = document.getElementById('snd-ambient');
+    if(ambient.paused) ambient.play().catch(() => {});
+}, {once: true});
+
+document.getElementById('btn-resgatar').addEventListener('click', function() {
+    const codeInput = document.getElementById('promo-code-input');
+    const code = codeInput.value.trim();
+    const statusMsg = document.getElementById('status-msg');
+    const btn = this;
+
+    if(!code) {
+        statusMsg.innerHTML = '<span style="color: #ff4757;">Digite o código primeiro!</span>';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+    fetch('{% url "validar_codigo_sorteio" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code: code })
+    })
+    .then(res => res.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="btn-text">RESGATAR SORTE</span> <i class="fas fa-bolt"></i>';
+
+        if(data.success) {
+            document.getElementById('snd-success').play();
+            document.getElementById('prize-val').innerText = data.prize;
+            document.getElementById('win-overlay').style.display = 'flex';
+        } else {
+            document.getElementById('snd-error').play();
+            statusMsg.innerHTML = `<span style="color: #ff4757; font-weight: 600;">${data.message}</span>`;
+            
+            // Efeito de vibração no card em caso de erro
+            const card = document.querySelector('.resgate-card');
+            card.style.animation = 'none';
+            setTimeout(() => card.style.animation = 'shake 0.3s', 10);
+        }
+    });
+});
+</script>
+
+<style>
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Estrutura dos Agentes | edxx{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="equipa-container">
+    
+    {# TOPO NAVEGAÇÃO #}
+    <div class="top-header">
+        <a href="{% url 'menu' %}" class="btn-back">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <h1 class="page-title">ESTRUTURA DOS AGENTES</h1>
+        <div style="width: 32px;"></div> {# Compensação para centralizar título #}
+    </div>
+
+    {# INDICADORES DE CONTABILIDADE #}
+    <div class="stats-grid">
+        <div class="stat-card glass-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+                <span class="stat-value">{{ level_a_count }}</span>
+                <span class="stat-label">Membros</span>
+            </div>
+        </div>
+        <div class="stat-card glass-card">
+            <div class="stat-icon" style="color: #00ff88;"><i class="fas fa-user-check"></i></div>
+            <div class="stat-info">
+                <span class="stat-value">{{ level_a_investors }}</span>
+                <span class="stat-label">Investidores</span>
+            </div>
+        </div>
+    </div>
+
+    {# LINK DE CONVITE #}
+    <div class="invite-section glass-card">
+        <div class="invite-header">
+            <i class="fas fa-link"></i>
+            <span>Link de Convite Individual</span>
+        </div>
+        <div class="invite-box">
+            <span id="invite-link-text">{{ invite_link }}</span>
+            <button onclick="copyInvite()" id="btn-copy"><i class="fas fa-copy"></i></button>
+        </div>
+        <div class="instruction-box">
+            <p><i class="fas fa-info-circle"></i> Copie o seu link de convite e envie às pessoas próximas. Ganhe <strong>15%</strong> por cada convite bem-sucedido dos seus agentes.</p>
+        </div>
+    </div>
+
+    {# LISTA DE AGENTES (FILTRADA PARA PAGOS) #}
+    <div class="team-list-section">
+        <h2 class="section-title">MEUS AGENTES ATIVOS</h2>
+        
+        <div class="member-list">
+            {% for member in level_a %}
+                {% with active_level=member.userlevel_set.filter.first %}
+                {% if active_level and active_level.is_active %}
+                    <div class="member-card glass-card">
+                        <div class="member-main-info">
+                            <div class="member-avatar">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="member-details">
+                                <span class="m-id">{{ member.phone_number }}</span>
+                                <span class="m-date">Desde: {{ active_level.purchase_date|date:"d/m/Y" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="member-status-area">
+                            <div class="m-badge">{{ active_level.level.name }}</div>
+                            <div class="task-indicator">
+                                {% if member.task_set.last.completed_at|date:"Y-m-d" == today|date:"Y-m-d" or member.task_set.last.task_day|date:"Y-m-d" == today|date:"Y-m-d" %}
+                                    <span class="task-done"><i class="fas fa-check-circle"></i> Feito</span>
+                                {% else %}
+                                    <span class="task-pending"><i class="fas fa-clock"></i> Pendente</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% endwith %}
+            {% empty %}
+                <div class="empty-state glass-card">
+                    <i class="fas fa-user-slash"></i>
+                    <p>Nenhum investidor ativo nível 1.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-lilac: #a29bfe;
+        --deep-lilac: #6c5ce7;
+        --glass: rgba(255, 255, 255, 0.08);
+        --text-light: #f1f2f6;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+        background: radial-gradient(circle at top left, #2d3436, #000);
+        background-attachment: fixed;
+        color: var(--text-light);
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        overflow-x: hidden; /* Bloqueia rolagem lateral */
+    }
+
+    .equipa-container {
+        width: 100%;
+        max-width: 450px; /* Otimizado para dispositivos mobile */
+        margin: 0 auto;
+        padding: 15px 12px 100px;
+    }
+
+    /* Topo */
+    .top-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .btn-back {
+        width: 35px;
+        height: 35px;
+        background: var(--glass);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    .page-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        color: var(--primary-lilac);
+        margin: 0;
+    }
+
+    /* Cards */
+    .glass-card {
+        background: rgba(162, 155, 254, 0.04);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(162, 155, 254, 0.15);
+        border-radius: 18px;
+    }
+
+    /* Indicadores */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .stat-card {
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .stat-icon { font-size: 1.2rem; color: var(--primary-lilac); }
+    .stat-value { display: block; font-size: 1.1rem; font-weight: 800; }
+    .stat-label { font-size: 0.65rem; color: #b2bec3; text-transform: uppercase; }
+
+    /* Convite */
+    .invite-section { padding: 15px; margin-bottom: 25px; }
+    .invite-header { font-size: 0.8rem; margin-bottom: 10px; color: var(--primary-lilac); }
+    .invite-box {
+        display: flex;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 10px;
+        border-radius: 10px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        border: 1px dashed rgba(162, 155, 254, 0.3);
+    }
+    #invite-link-text {
+        font-size: 0.75rem;
+        color: #dfe6e9;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80%;
+    }
+    #btn-copy { background: none; border: none; color: var(--primary-lilac); font-size: 1.1rem; }
+    .instruction-box p { font-size: 0.7rem; line-height: 1.4; color: #b2bec3; margin: 0; }
+
+    /* Lista */
+    .section-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: #fff;
+        border-left: 3px solid var(--deep-lilac);
+        padding-left: 8px;
+    }
+    .member-card {
+        padding: 12px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .member-main-info { display: flex; align-items: center; gap: 10px; }
+    .member-avatar {
+        width: 38px;
+        height: 38px;
+        background: var(--deep-lilac);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+    .m-id { font-weight: 700; font-size: 0.85rem; display: block; }
+    .m-date { font-size: 0.6rem; color: #636e72; }
+
+    .member-status-area { text-align: right; }
+    .m-badge {
+        font-size: 0.6rem;
+        background: rgba(0, 255, 136, 0.1);
+        color: #00ff88;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-weight: 800;
+    }
+    .task-indicator { font-size: 0.65rem; margin-top: 4px; font-weight: 600; }
+    .task-done { color: #00ff88; }
+    .task-pending { color: #ff7675; }
+
+    .empty-state { text-align: center; padding: 30px; color: #636e72; font-size: 0.8rem; }
+</style>
+
+<script>
+    function copyInvite() {
+        const text = document.getElementById('invite-link-text').innerText;
+        const btn = document.getElementById('btn-copy');
+        navigator.clipboard.writeText(text).then(() => {
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i>'; }, 2000);
+        });
+    }
+</script>
+{% endblock %}

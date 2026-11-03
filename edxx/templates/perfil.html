@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Perfil VIP - edxx{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --glass: rgba(255, 255, 255, 0.12);
+        --glass-border: rgba(255, 255, 255, 0.2);
+        --accent: #f1c40f; 
+        --lilac-glow: #a29bfe;
+        --success: #00ff88;
+        --bg-deep: #1a0633;
+    }
+
+    /* Reset de cores para remover as bordas pretas laterais */
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100vh;
+        background: var(--bg-deep) !important;
+    }
+
+    body {
+        background: radial-gradient(circle at top right, #4834d4, #2c1a4d, #1a0633) !important;
+        background-attachment: fixed !important;
+        color: white;
+        font-family: 'Poppins', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .bg-sparkles {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: url('https://www.transparenttextures.com/patterns/stardust.png');
+        pointer-events: none; opacity: 0.3; z-index: 0;
+    }
+
+    .container-vip {
+        position: relative; z-index: 1;
+        width: 100%; max-width: 420px;
+        margin: 0 auto; padding: 30px 20px;
+        box-sizing: border-box;
+    }
+
+    /* Header e Avatar */
+    .profile-header { text-align: center; margin-bottom: 30px; }
+    .avatar-wrapper { position: relative; display: inline-block; }
+    .avatar-main {
+        width: 120px; height: 120px; border-radius: 50%;
+        border: 4px solid var(--accent);
+        box-shadow: 0 0 30px rgba(162, 155, 254, 0.5);
+        background: #fff;
+    }
+    .badge-id {
+        background: var(--accent); color: #000; font-weight: 800;
+        padding: 5px 18px; border-radius: 50px; font-size: 0.8rem;
+        position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    /* Status Estilizado */
+    .status-box { text-align: center; margin-bottom: 25px; }
+    .status-badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(255,255,255,0.1); padding: 8px 20px;
+        border-radius: 50px; border: 1px solid var(--glass-border);
+    }
+    .color-excellent { color: #00ff88; text-shadow: 0 0 10px rgba(0,255,136,0.5); }
+    .color-good { color: #00d4ff; text-shadow: 0 0 10px rgba(0,212,255,0.5); }
+
+    /* Cards de Saldo */
+    .balance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 35px; }
+    .val-card {
+        background: var(--glass); backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border); border-radius: 22px;
+        padding: 20px 10px; text-align: center;
+        transition: 0.3s;
+    }
+    .val-label { font-size: 0.7rem; color: var(--lilac-glow); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+    .val-amount { font-size: 1.1rem; font-weight: 800; display: block; margin-top: 8px; color: #fff; }
+
+    /* Menu de Navegação */
+    .nav-list { display: flex; flex-direction: column; gap: 15px; }
+    .nav-btn {
+        display: flex; align-items: center;
+        padding: 20px 25px; background: var(--glass);
+        border: 1px solid var(--glass-border); border-radius: 20px;
+        color: white; text-decoration: none; font-weight: 600; 
+        cursor: pointer; transition: all 0.3s ease;
+    }
+    .nav-btn:active { transform: scale(0.97); background: rgba(255,255,255,0.2); }
+    .nav-btn i { margin-right: 20px; font-size: 1.3rem; color: var(--accent); width: 25px; text-align: center; }
+
+    /* Formulário de IBAN */
+    #ibanFormContainer {
+        display: none; margin-top: 25px; padding: 25px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+        backdrop-filter: blur(20px); border-radius: 25px;
+        border: 1px solid var(--lilac-glow);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        animation: slideUp 0.4s ease-out;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .form-title { text-align: center; margin-bottom: 20px; color: var(--accent); font-size: 1.1rem; font-weight: 700; text-transform: uppercase; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 0.75rem; color: var(--lilac-glow); margin-bottom: 8px; margin-left: 5px; }
+    
+    .form-group input, .form-control {
+        width: 100%; padding: 14px 18px; border-radius: 15px; 
+        border: 1px solid var(--glass-border);
+        background: rgba(0,0,0,0.2); color: white; 
+        font-size: 0.9rem; outline: none; transition: 0.3s;
+        box-sizing: border-box;
+    }
+    .form-group input:focus { border-color: var(--accent); background: rgba(0,0,0,0.4); }
+
+    .save-btn {
+        width: 100%; padding: 16px; background: linear-gradient(45deg, #2ecc71, #00ff88);
+        border: none; border-radius: 15px; color: #1a0633; font-weight: 800;
+        cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+        box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .footer-brand { text-align: center; margin-top: 50px; font-weight: 900; font-size: 1.8rem; letter-spacing: 8px; color: #fff; opacity: 0.1; }
+</style>
+
+<div class="bg-sparkles"></div>
+
+<div class="container-vip">
+    <header class="profile-header">
+        <div class="avatar-wrapper">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.username }}&backgroundColor=ffdfbf" class="avatar-main">
+            <div class="badge-id">ID: {{ user.id }}</div>
+        </div>
+        <h2 style="margin: 25px 0 5px 0; font-weight: 800; letter-spacing: 1px;">{{ user.username }}</h2>
+        <p style="font-size: 0.8rem; opacity: 0.5;">MEMBRO EXCLUSIVO edxx</p>
+    </header>
+
+    <div class="status-box">
+        <div class="status-badge">
+            {% if not user.is_active %}
+                <span style="color:#ff4d4d;"><i class="fas fa-user-slash"></i> BANIDO</span>
+            {% elif user.available_balance > 50000 %}
+                <span class="color-excellent"><i class="fas fa-crown"></i> EXCELENTE</span>
+            {% else %}
+                <span class="color-good"><i class="fas fa-check-circle"></i> BOM</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="balance-grid">
+        <div class="val-card">
+            <span class="val-label">Saldo</span>
+            <span class="val-amount">{{ user.available_balance|floatformat:2 }} KZ</span>
+        </div>
+        <div class="val-card">
+            <span class="val-label">Subsídio</span>
+            <span class="val-amount">{{ user.subsidy_balance|floatformat:2 }} KZ</span>
+        </div>
+    </div>
+
+    <nav class="nav-list">
+        <div class="nav-btn" onclick="toggleIbanForm()">
+            <i class="fas fa-university"></i> EDITAR IBAN
+        </div>
+
+        <a href="{% url 'change_password' %}" class="nav-btn">
+            <i class="fas fa-shield-alt"></i> SEGURANÇA
+        </a>
+
+        <a href="{% url 'roleta' %}" class="nav-btn">
+            <i class="fas fa-dice"></i> SORTEIO DA SORTE
+        </a>
+
+        <a href="{% static 'app/edxx.apk' %}" class="nav-btn" style="background: linear-gradient(45deg, #6c5ce7, #a29bfe); border: none;" download>
+            <i class="fas fa-download"></i> APLICATIVO
+        </a>
+    </nav>
+
+    <div id="ibanFormContainer">
+        <div class="form-title">Atualizar Dados</div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label><i class="fas fa-user-edit"></i> Nome do Titular</label>
+                {{ form.account_holder_name }}
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-piggy-bank"></i> Banco / Instituição</label>
+                {{ form.bank_name }}
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-fingerprint"></i> Número IBAN</label>
+                {{ form.IBAN }}
+            </div>
+            <button type="submit" name="update_bank" class="save-btn">
+                CONCLUIR ALTERAÇÃO
+            </button>
+            <div onclick="toggleIbanForm()" style="text-align:center; color: #ff4d4d; font-size: 0.8rem; margin-top: 15px; cursor: pointer; font-weight: 600;">
+                FECHAR SEM SALVAR
+            </div>
+        </form>
+    </div>
+
+    <div class="footer-brand">edxx</div>
+</div>
+
+<script>
+    function toggleIbanForm() {
+        const form = document.getElementById('ibanFormContainer');
+        if (form.style.display === 'none' || form.style.display === '') {
+            form.style.display = 'block';
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            form.style.display = 'none';
+        }
+    }
+
+    window.onload = function() {
+        const inputs = document.querySelectorAll('#ibanFormContainer input');
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+            if(!input.placeholder) input.placeholder = "Digite aqui...";
+        });
+    }
+</script>
+
+{% endblock %}

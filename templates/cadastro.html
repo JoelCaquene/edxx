@@ -1,0 +1,350 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>edxx | {% trans "Cadastro" %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-accent: #00f2fe;
+            --secondary-accent: #4facfe;
+            --glass-bg: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.22);
+            --glass-input: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #cbd5e1;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #0f2027, #203a43);
+            background-size: 400% 400%;
+            animation: gradientBg 15s ease infinite;
+        }
+
+        @keyframes gradientBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ambient glowing lights for glassmorphism background depth */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        body::before {
+            background: rgba(79, 172, 254, 0.35);
+            top: 10%;
+            left: 15%;
+            animation: floatGlow 8s ease-in-out infinite alternate;
+        }
+        body::after {
+            background: rgba(0, 242, 254, 0.25);
+            bottom: 10%;
+            right: 15%;
+            animation: floatGlow 10s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, -40px) scale(1.15); }
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-area { 
+            text-align: center; 
+            margin-bottom: 25px; 
+            color: var(--text-main); 
+        }
+
+        .logo-icon-wrapper {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 12px;
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.2), rgba(0, 242, 254, 0.2));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-area i { 
+            font-size: 32px; 
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-area h1 { 
+            font-size: 28px; 
+            font-weight: 700; 
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .logo-area p { 
+            font-size: 14px; 
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .register-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            width: 100%;
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Glass shimmer effect line */
+        .register-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+            transition: 0.5s;
+            pointer-events: none;
+        }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: var(--glass-input);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0 15px;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .flag-icon { margin-right: 8px; font-size: 18px; }
+        .prefix-code { color: var(--text-main); margin-right: 10px; font-weight: 600; font-size: 14px; }
+        
+        .auth-input { 
+            width: 100%; 
+            padding: 14px 0; 
+            border: none; 
+            background: transparent; 
+            font-size: 14px; 
+            color: var(--text-main);
+            outline: none; 
+        }
+
+        .auth-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .toggle-password { 
+            cursor: pointer; 
+            color: #94a3b8; 
+            margin-left: 10px; 
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary-accent);
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #0f172a;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 242, 254, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(0, 242, 254, 0.45);
+            filter: brightness(1.05);
+        }
+
+        .login-footer { 
+            text-align: center; 
+            margin-top: 22px; 
+            color: var(--text-muted); 
+            font-size: 14px; 
+            line-height: 1.5;
+        }
+
+        .login-footer a { 
+            color: var(--primary-accent); 
+            font-weight: 700; 
+            text-decoration: none; 
+            transition: opacity 0.2s;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="logo-area">
+            <div class="logo-icon-wrapper">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <h1>edxx</h1>
+            <p>{% trans "Plataforma de Educação Financeira" %}</p>
+        </div>
+
+        <div class="register-card">
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>1. {% trans "Número de Telefone (Celular)" %}</label>
+                    <div class="input-wrapper">
+                        <span class="flag-icon">🇦🇴</span>
+                        <span class="prefix-code">+244</span>
+                        <input type="text" 
+                               name="phone_number" 
+                               id="phone_input"
+                               class="auth-input" 
+                               placeholder="940 000 000" 
+                               maxlength="12" 
+                               inputmode="numeric"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 12)" 
+                               required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>2. {% trans "Criar Senha" %}</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock" style="color: #94a3b8;"></i>
+                        <input type="password" 
+                               name="password" 
+                               id="pass1" 
+                               class="auth-input" 
+                               style="margin-left:10px;" 
+                               placeholder="Mínimo de 8 caracteres" 
+                               oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')"
+                               required>
+                        <i class="fa-solid fa-eye-slash toggle-password" onclick="togglePass('pass1', this)"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>3. {% trans "Confirmar Senha" %}</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock" style="color: #94a3b8;"></i>
+                        <input type="password" 
+                               name="confirm_password" 
+                               id="pass2" 
+                               class="auth-input" 
+                               style="margin-left:10px;" 
+                               placeholder="Repita sua senha" 
+                               oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')"
+                               required>
+                        <i class="fa-solid fa-eye-slash toggle-password" onclick="togglePass('pass2', this)"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>4. {% trans "Código de Convite" %}</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user-plus" style="color: #94a3b8;"></i>
+                        <input type="text" 
+                               name="invited_by_code" 
+                               class="auth-input" 
+                               style="margin-left:10px;" 
+                               placeholder="Insira o código (Opcional)" 
+                               value="{{ request.GET.invite|default:'' }}"
+                               oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-register">{% trans "CADASTRAR" %}</button>
+            </form>
+        </div>
+
+        <div class="login-footer">
+            {% trans "Já tem uma conta?" %} <br>
+            <a href="{% url 'login' %}">{% trans "Fazer Login" %}</a>
+        </div>
+    </div>
+
+    <script>
+        function togglePass(id, el) {
+            const input = document.getElementById(id);
+            input.type = (input.type === "password") ? "text" : "password";
+            el.classList.toggle("fa-eye");
+            el.classList.toggle("fa-eye-slash");
+        }
+    </script>
+</body>
+</html>

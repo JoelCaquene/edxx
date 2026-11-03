@@ -1,0 +1,289 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>edxx - {% trans "Cadastro" %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-purple: #4a00ac; 
+            --btn-gold-start: #ccab66; 
+            --btn-gold-end: #937438;
+            --btn-black: #000000;
+            --input-bg: #f3f7ff; 
+            --logo-red: #ff0000; 
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-purple);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--bg-purple);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 30px;
+            overflow-x: hidden;
+        }
+
+        /* TOPO BRANCO REDUZIDO PARA MELHOR ESTÉTICA */
+        .top-white-bg {
+            width: 100%;
+            background-color: #ffffff;
+            height: 160px; /* Reduzi de 220px para 160px */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-section .logo-text {
+            font-family: 'Noto Serif', serif; 
+            font-size: 60px; 
+            color: var(--logo-red);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: -10px; /* Sobe um pouco a logo */
+            z-index: 2;
+        }
+
+        .wave-container {
+            position: absolute;
+            bottom: -45px; /* Ajustado para a nova altura */
+            left: 0;
+            width: 100%;
+            line-height: 0;
+            z-index: 5;
+        }
+
+        .wave-container svg {
+            width: 100%;
+            height: 60px; /* Curva mais discreta e elegante */
+        }
+
+        /* CARD DE FORMULÁRIO */
+        .register-card {
+            background: #ffffff;
+            width: 92%; 
+            border-radius: 35px; 
+            padding: 30px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 10;
+            margin-top: 15px; /* Encaixe mais justo à curva */
+        }
+
+        .form-group { margin-bottom: 15px; position: relative; }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i.main-icon {
+            position: absolute;
+            left: 15px;
+            color: #8e8e8e;
+            font-size: 1rem;
+            z-index: 6;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 14px 15px 14px 48px;
+            border: none;
+            background-color: var(--input-bg);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            outline: none;
+            color: #333;
+        }
+
+        .input-phone { padding-left: 95px !important; }
+
+        .country-code-select {
+            position: absolute;
+            left: 10px;
+            width: 80px;
+            border: none;
+            background: transparent;
+            font-weight: 700;
+            z-index: 7;
+            outline: none;
+            height: 100%;
+            font-size: 0.9rem;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            cursor: pointer;
+            color: #aaa;
+            z-index: 7;
+        }
+
+        /* BOTÕES */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 50px; 
+            background: var(--btn-black);
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+        }
+
+        .btn-register img {
+            width: 30px;
+            margin-left: 10px;
+        }
+
+        .btn-login-link {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 50px; 
+            background: linear-gradient(to bottom, var(--btn-gold-start), var(--btn-gold-end));
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        .separator-text {
+            color: #aaa;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="top-white-bg">
+            <div class="header-section">
+                <div class="logo-text">edxx</div>
+            </div>
+            
+            <div class="wave-container">
+                <svg viewBox="0 0 500 150" preserveAspectRatio="none">
+                    <path d="M0,45 C150,140 350,-40 500,45 L500,0 L0,0 Z" fill="none" stroke="#ff0000" stroke-width="2"></path>
+                    <path d="M0,50 C150,150 350,-50 500,50 L500,0 L0,0 Z" fill="#ffffff"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div class="register-card">
+            <form method="post" class="auth-form" id="registerForm">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>{% trans "Número de Telefone" %}</label>
+                    <div class="input-wrapper">
+                        <select class="country-code-select" name="country_code">
+                            <option value="+244">+244</option>
+                            <option value="+351">+351</option>
+                            <option value="+55">+55</option>
+                        </select>
+                        <input type="text" name="phone_number" class="input-phone" placeholder="940000000" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>{% trans "Palavra Passe" %}</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock main-icon"></i>
+                        <input type="password" name="password" id="password" placeholder="{% trans 'Crie sua senha' %}" required>
+                        <i class="fa-solid fa-eye-slash toggle-password" onclick="togglePass('password', this)"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>{% trans "Repita Senha" %}</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-shield-halved main-icon"></i>
+                        <input type="password" name="confirm_password" id="confirm_password" placeholder="{% trans 'Repita a senha' %}" required>
+                        <i class="fa-solid fa-eye-slash toggle-password" onclick="togglePass('confirm_password', this)"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>{% trans "Código de Convite" %}</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-qrcode main-icon"></i>
+                        <input type="text" name="invited_by_code" placeholder="{% trans 'Opcional' %}" value="{{ request.GET.invite|default:'' }}">
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn-register">
+                        {% trans "Registar-se" %}
+                        <img src="https://cdn-icons-png.flaticon.com/512/2554/2554978.png" alt="truck">
+                    </button>
+
+                    <div class="separator-text">or</div>
+
+                    <a href="{% url 'login' %}" class="btn-login-link">
+                        {% trans "Entrar" %}
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function togglePass(id, el) {
+            const input = document.getElementById(id);
+            if (input.type === "password") {
+                input.type = "text";
+                el.classList.replace("fa-eye-slash", "fa-eye");
+            } else {
+                input.type = "password";
+                el.classList.replace("fa-eye", "fa-eye-slash");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}edxx - Rendimento Profissional{% endblock %}
+
+{% block content %}
+<div class="renda-container">
+    
+    {# Top Bar Minimalista #}
+    <div class="header-minimal">
+        <a href="{% url 'menu' %}" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
+        <span class="header-title">PAINEL DE RENDIMENTOS</span>
+        <div class="placeholder"></div>
+    </div>
+
+    {# Card Principal de Saldo (Estilo Clínico / Farmacêutico Premium) #}
+    <div class="wallet-card">
+        <div class="wallet-info">
+            <span class="wallet-label"><i class="fa-solid fa-microscope" style="margin-right: 6px; opacity: 0.8;"></i> Saldo Disponível</span>
+            <div class="balance-row">
+                <span class="currency">KZ</span>
+                <span class="amount" id="balance-kz">{{ user.available_balance|default:"0.00" }}</span>
+            </div>
+            <div class="usdt-convert">
+                <span class="usdt-icon"><i class="fa-solid fa-briefcase-medical"></i></span>
+                <span id="balance-usdt">0.00</span> 
+                <span class="usdt-label">USDT</span>
+            </div>
+        </div>
+        <div class="wallet-decoration">
+            <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+    </div>
+
+    {# Grade de Indicadores (Exatamente 3 Cards por Linha) #}
+    <div class="income-grid">
+        <div class="data-card bg-medical-blue">
+            <div class="card-icon"><i class="fa-solid fa-user-md"></i></div>
+            <span class="data-label">Hoje</span>
+            <span class="data-value"><small>KZ</small> {{ receita_hoje|default:"0.00" }}</span>
+        </div>
+
+        <div class="data-card bg-medical-teal">
+            <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+            <span class="data-label">Ontem</span>
+            <span class="data-value"><small>KZ</small> {{ receita_ontem|default:"0.00" }}</span>
+        </div>
+
+        <div class="data-card bg-medical-green">
+            <div class="card-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <span class="data-label">Este Mês</span>
+            <span class="data-value"><small>KZ</small> {{ receita_mes_atual|default:"0.00" }}</span>
+        </div>
+
+        <div class="data-card bg-medical-dark-green">
+            <div class="card-icon"><i class="fa-solid fa-calendar-minus"></i></div>
+            <span class="data-label">Mês Ant.</span>
+            <span class="data-value"><small>KZ</small> {{ receita_mes_anterior|default:"0.00" }}</span>
+        </div>
+
+        <div class="data-card bg-medical-cyan">
+            <div class="card-icon"><i class="fa-solid fa-hand-holding-medical"></i></div>
+            <span class="data-label">Subsídios</span>
+            <span class="data-value"><small>KZ</small> {{ user.subsidy_balance|default:"0.00" }}</span>
+        </div>
+
+        <div class="data-card bg-medical-red full-width-row">
+            <div class="full-row-content">
+                <span class="data-label"><i class="fa-solid fa-file-invoice-dollar" style="margin-right: 4px;"></i> Total Sacado (Sucesso)</span>
+                <span class="data-value">KZ {{ total_sacado|default:"0.00" }}</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    :root {
+        --medical-primary: #00b894;
+        --medical-dark: #0a3d42;
+        --bg-body: #f4f7f6;
+        --card-shadow: 0 4px 12px rgba(10, 61, 66, 0.06);
+    }
+
+    body { 
+        background-color: var(--bg-body) !important; 
+        font-family: 'Poppins', sans-serif; 
+        overflow-x: hidden;
+    }
+
+    .renda-container { 
+        padding: 20px 14px; 
+        max-width: 600px; 
+        margin: 0 auto; 
+        box-sizing: border-box;
+    }
+
+    /* Header */
+    .header-minimal { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 22px; 
+    }
+    .btn-back { 
+        width: 38px; 
+        height: 38px; 
+        background: white; 
+        border-radius: 10px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        color: var(--medical-dark); 
+        box-shadow: var(--card-shadow); 
+        text-decoration: none; 
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+    .header-title { 
+        font-weight: 700; 
+        font-size: 15px; 
+        color: var(--medical-dark); 
+        letter-spacing: 0.5px;
+    }
+    .placeholder { width: 38px; }
+
+    /* Wallet Card */
+    .wallet-card { 
+        background: linear-gradient(135deg, #0a3d42, #00b894); 
+        border-radius: 20px; 
+        padding: 22px; 
+        color: white; 
+        position: relative;
+        overflow: hidden; 
+        box-shadow: 0 12px 24px rgba(10, 61, 66, 0.2);
+        margin-bottom: 22px;
+    }
+    .wallet-label { 
+        font-size: 12px; 
+        opacity: 0.9; 
+        font-weight: 500; 
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+    }
+    .balance-row { 
+        display: flex; 
+        align-items: baseline; 
+        gap: 6px; 
+        margin-top: 8px; 
+    }
+    .currency { font-size: 16px; font-weight: 600; color: #a4f4e4; }
+    .amount { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; }
+    .usdt-convert { 
+        margin-top: 15px; 
+        background: rgba(255,255,255,0.12); 
+        display: inline-flex; 
+        padding: 5px 12px; 
+        border-radius: 50px; 
+        font-size: 13px; 
+        align-items: center; 
+        gap: 6px; 
+        border: 1px solid rgba(255,255,255,0.15); 
+    }
+    .wallet-decoration { 
+        position: absolute; 
+        right: -15px; 
+        bottom: -15px; 
+        font-size: 90px; 
+        opacity: 0.08; 
+    }
+
+    /* Grid de Dados Fluida com Exatamente 3 Colunas por Linha */
+    .income-grid { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 10px; 
+        margin-bottom: 20px; 
+        width: 100%;
+    }
+    
+    .data-card { 
+        background: white; 
+        padding: 14px 8px; 
+        border-radius: 14px; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center;
+        text-align: center;
+        box-shadow: var(--card-shadow); 
+        border: 1px solid rgba(10, 61, 66, 0.04);
+        box-sizing: border-box;
+        min-width: 0;
+    }
+
+    /* Ajuste elegante para o Total Sacado ocupar as colunas restantes na linha de 3 elementos */
+    .full-width-row { 
+        grid-column: span 1; /* Alinha-se harmoniosamente na terceira posição */
+        padding: 14px 8px;
+    }
+    .full-row-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .card-icon {
+        font-size: 15px;
+        margin-bottom: 5px;
+    }
+
+    .data-label { 
+        font-size: 10px; 
+        color: #7f8c8d; 
+        font-weight: 600; 
+        text-transform: uppercase; 
+        letter-spacing: 0.2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
+    
+    .data-value { 
+        font-size: 11px; 
+        color: var(--medical-dark); 
+        font-weight: 700; 
+        margin-top: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
+
+    .data-value small {
+        font-size: 8px;
+        font-weight: 500;
+        opacity: 0.8;
+    }
+
+    /* Cores Cirúrgicas e Clínicas */
+    .bg-medical-blue { border-top: 3px solid #0984e3; } .bg-medical-blue .card-icon { color: #0984e3; }
+    .bg-medical-teal { border-top: 3px solid #11bbc5; } .bg-medical-teal .card-icon { color: #11bbc5; }
+    .bg-medical-green { border-top: 3px solid #00b894; } .bg-medical-green .card-icon { color: #00b894; }
+    .bg-medical-dark-green { border-top: 3px solid #0a3d42; } .bg-medical-dark-green .card-icon { color: #0a3d42; }
+    .bg-medical-cyan { border-top: 3px solid #00cec9; } .bg-medical-cyan .card-icon { color: #00cec9; }
+    .bg-medical-red { border-top: 3px solid #d63031; } .bg-medical-red .card-icon { color: #d63031; }
+
+    /* Otimização Dinâmica para Celulares Estreitos */
+    @media (max-width: 380px) {
+        .data-label { font-size: 9px; }
+        .data-value { font-size: 10px; }
+        .card-icon { font-size: 13px; }
+        .income-grid { gap: 6px; }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const exchangeRate = 1000; 
+        const kzAmount = parseFloat("{{ user.available_balance }}".replace(',', '.'));
+        
+        if (!isNaN(kzAmount)) {
+            const usdtAmount = (kzAmount / exchangeRate).toFixed(2);
+            document.getElementById('balance-usdt').innerText = usdtAmount;
+        }
+    });
+</script>
+{% endblock %}

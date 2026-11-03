@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Centro de Tutoria - edxx{% endblock %}
+
+{% block content %}
+<div class="tutoria-master-container">
+    
+    {# HEADER MINIMALISTA #}
+    <div class="tutoria-header-compact">
+        <h1>TUTORIA</h1>
+    </div>
+
+    <div class="tutoria-body">
+        
+        {# 1. SEÇÃO DE VÍDEOS DE INSTRUÇÃO #}
+        <div class="tutoria-section">
+            <h2 class="section-title"><i class="fas fa-play-circle"></i> Instruções em Vídeo</h2>
+            
+            <div class="video-grid">
+                <div class="video-card tutorial-bg-alt">
+                    <div class="video-wrapper">
+                        <video controls poster="{% static 'images/thumb_deposito.jpg' %}">
+                            <source src="{% static 'videos/tutorial_deposito.mp4' %}" type="video/mp4">
+                            Seu navegador não suporta vídeos.
+                        </video>
+                    </div>
+                    <div class="video-info">
+                        <h3>Depósito e Adquirir Função</h3>
+                        <p>Aprenda o passo a passo para garantir sua vaga na empresa.</p>
+                    </div>
+                </div>
+
+                <div class="video-card tutorial-bg-alt">
+                    <div class="video-wrapper">
+                        <video controls poster="{% static 'images/thumb_trabalho.jpg' %}">
+                            <source src="{% static 'videos/tutorial_trabalho.mp4' %}" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="video-info">
+                        <h3>Execução de Trabalho Diário</h3>
+                        <p>Como realizar suas tarefas de marketing e garantir seu ganho.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# 2. SEÇÃO DE CARDS DE IMAGENS - APENAS EQUIPA E INVESTIMENTO #}
+        <div class="tutoria-section">
+            <h2 class="section-title"><i class="fas fa-images"></i> Guias e Tabelas</h2>
+            
+            <div class="image-stack">
+                <div class="img-tutorial-card tutorial-bg-alt">
+                    <div class="img-badge">EQUIPA</div>
+                    <img src="{% static 'images/salario_equipe.jpg' %}" alt="Salário Semanal">
+                    <div class="img-caption">Tabela de Salários por Formação de Equipa</div>
+                </div>
+
+                <div class="img-tutorial-card tutorial-bg-alt">
+                    <div class="img-badge">RENDIMENTOS</div>
+                    <img src="{% static 'images/tabela_rendimento.jpg' %}" alt="Tabela de Investimento">
+                    <div class="img-caption">Tabela Oficial de Cargos e Lucros</div>
+                </div>
+            </div>
+        </div>
+
+        {# 3. SEÇÃO HISTÓRICO E FUNCIONAMENTO #}
+        <div class="tutoria-section">
+            <h2 class="section-title"><i class="fas fa-landmark"></i> Sobre a Instituição</h2>
+            
+            <div class="history-card tutorial-bg-alt">
+                <div class="history-item">
+                    <div class="history-icon"><i class="fas fa-history"></i></div>
+                    <div class="history-text">
+                        <h3>A Nossa Trajetória</h3>
+                        <p>A edxx é conhecida no mercado angolano por atuar na gestão de capital humano e prestação de serviços especializados...</p>
+                    </div>
+                </div>
+
+                <div class="history-item">
+                    <div class="history-icon"><i class="fas fa-briefcase"></i></div>
+                    <div class="history-text">
+                        <h3>Como são feitos os Trabalhos?</h3>
+                        <p>Adquirimos novos serviços de Marketing Digital. Empresas ou particulares pagam para expandir suas marcas na nossa plataforma...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary: #001f3f;
+        --accent: #2563eb;
+        --bg-light: #f8fafc;
+        --card-bg-custom: #eef2f6; 
+    }
+
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+        margin: 0; padding: 0;
+        background-color: var(--bg-light);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .tutoria-header-compact {
+        background: var(--primary);
+        padding: 20px;
+        text-align: center;
+        color: white;
+        border-radius: 0 0 20px 20px;
+    }
+    .tutoria-header-compact h1 { font-size: 18px; margin: 0; letter-spacing: 2px; font-weight: 800; }
+
+    .tutoria-body { padding: 20px 15px 100px; }
+    .tutoria-section { margin-bottom: 35px; }
+    
+    .tutorial-bg-alt { background-color: var(--card-bg-custom) !important; color: #000000 !important; }
+    .tutorial-bg-alt h3, .tutorial-bg-alt p, .tutorial-bg-alt div { color: #000000 !important; }
+
+    .section-title {
+        font-size: 16px; font-weight: 700; color: var(--primary);
+        display: flex; align-items: center; gap: 10px; margin-bottom: 15px;
+    }
+
+    .video-grid { display: flex; flex-direction: column; gap: 20px; }
+    .video-card { border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .video-wrapper video { width: 100%; display: block; background: #000; }
+    .video-info { padding: 15px; }
+    .video-info h3 { font-size: 15px; margin: 0 0 5px; font-weight: 700; }
+    .video-info p { font-size: 12.5px; margin: 0; }
+
+    .image-stack { display: flex; flex-direction: column; gap: 15px; }
+    .img-tutorial-card { position: relative; padding: 10px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .img-tutorial-card img { width: 100%; border-radius: 10px; }
+    .img-badge { position: absolute; top: 20px; left: 20px; background: var(--accent); color: white !important; font-size: 10px; padding: 4px 10px; border-radius: 20px; }
+    .img-caption { text-align: center; font-size: 13px; font-weight: 700; padding-top: 10px; }
+
+    .history-card { border-radius: 20px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .history-item { display: flex; gap: 15px; margin-bottom: 25px; }
+    .history-icon { min-width: 40px; height: 40px; background: rgba(0,0,0,0.05); color: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+
+    @media (min-width: 768px) {
+        .tutoria-body { max-width: 800px; margin: 0 auto; }
+        .video-grid { flex-direction: row; }
+        .video-card { flex: 1; }
+    }
+</style>
+{% endblock %}

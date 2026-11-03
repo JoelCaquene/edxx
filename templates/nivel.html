@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Níveis de Função - edxx Finanças{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --fin-blue: #0284c7;
+        --fin-dark: #0f172a;
+        --fin-light: #e0f2fe;
+        --fin-green: #16a34a;
+        --text-gray: #64748b;
+        --card-bg: #ffffff;
+        --body-bg: #f8fafc;
+    }
+
+    /* Reset de Segurança contra Rolagem Horizontal */
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: var(--body-bg) !important;
+    }
+
+    * {
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* Header Organizado (Não sobrepõe) */
+    .page-header {
+        background: var(--card-bg);
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        width: 100%;
+    }
+
+    .btn-back {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--fin-light);
+        color: var(--fin-blue);
+        border-radius: 12px;
+        text-decoration: none;
+        flex-shrink: 0;
+        transition: 0.2s;
+    }
+
+    .page-header h1 { 
+        font-size: 1rem; 
+        color: var(--fin-dark); 
+        margin: 0; 
+        font-weight: 800; 
+        line-height: 1.2;
+        text-transform: uppercase;
+    }
+
+    /* Container Principal */
+    .level-container {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 15px;
+    }
+
+    .level-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+    }
+
+    /* Card Estilo Profissional edxx */
+    .level-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        position: relative;
+    }
+
+    /* Borda lateral de destaque */
+    .level-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 20%;
+        height: 60%;
+        width: 4px;
+        background: var(--fin-blue);
+        border-radius: 0 4px 4px 0;
+    }
+
+    /* Ícone */
+    .level-icon-box {
+        width: 55px;
+        height: 55px;
+        background: var(--fin-light);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--fin-blue);
+        flex-shrink: 0;
+    }
+
+    /* Conteúdo do Centro */
+    .level-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .level-name {
+        display: block;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--fin-dark);
+        margin-bottom: 2px;
+    }
+
+    .income-label {
+        font-size: 0.8rem;
+        color: var(--text-gray);
+        font-weight: 500;
+    }
+
+    .income-value {
+        color: var(--fin-blue);
+        font-weight: 700;
+    }
+
+    /* Informação de Número de Tarefas */
+    .tasks-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--fin-green);
+        background: #f0fdf4;
+        padding: 2px 6px;
+        border-radius: 6px;
+        margin-top: 3px;
+        border: 1px solid #bbf7d0;
+    }
+
+    /* Badge do Contrato */
+    .contract-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #f1f5f9;
+        padding: 4px 8px;
+        border-radius: 6px;
+        margin-top: 5px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .contract-badge i {
+        font-size: 0.7rem;
+        color: var(--fin-blue);
+    }
+
+    .contract-text {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #334155;
+    }
+
+    /* Lado Direito - Preço e Ação */
+    .level-action {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .level-price {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--fin-dark);
+    }
+
+    /* Botão Aderir */
+    .btn-status {
+        padding: 8px 15px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        border: none;
+        text-transform: uppercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.2s;
+    }
+
+    .btn-join {
+        background: var(--fin-blue);
+        color: white;
+        box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
+    }
+
+    .btn-active {
+        background: #f0fdf4;
+        color: var(--fin-green);
+        border: 1px solid #bbf7d0;
+        cursor: default;
+    }
+
+    .spacer { height: 100px; width: 100%; }
+
+</style>
+
+<div class="page-header">
+    <a href="javascript:history.back()" class="btn-back">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <h1>Centro de Carreira Financeira</h1>
+</div>
+
+<div class="level-container">
+    <div class="level-list">
+        {% for level in levels %}
+        <div class="level-card">
+            
+            <!-- Ícones Dinâmicos de Finanças -->
+            <div class="level-icon-box">
+                {% if forloop.counter == 1 %}<i class="fas fa-wallet"></i>
+                {% elif forloop.counter == 2 %}<i class="fas fa-chart-line"></i>
+                {% elif forloop.counter == 3 %}<i class="fas fa-building-columns"></i>
+                {% elif forloop.counter == 4 %}<i class="fas fa-sack-dollar"></i>
+                {% else %}<i class="fas fa-chart-pie"></i>{% endif %}
+            </div>
+
+            <div class="level-info">
+                <span class="level-name">{{ level.name }}</span>
+                <div class="income-label">
+                    Diário: <span class="income-value">{{ level.daily_gain }} KZ</span>
+                </div>
+                
+                <!-- Informação de Número de Tarefas Diárias -->
+                <div class="tasks-count-badge">
+                    <i class="fas fa-tasks"></i> <span>{{ level.daily_tasks_count|default:1 }} Tarefa(s) por dia</span>
+                </div>
+
+                <div class="contract-badge">
+                    <i class="fas fa-file-signature"></i>
+                    <span class="contract-text">CONTRATO: {{ level.cycle_days|default:365 }} DIAS</span>
+                </div>
+            </div>
+
+            <div class="level-action">
+                <div class="level-price">{{ level.deposit_value }} <small style="font-size: 0.6rem;">KZ</small></div>
+                
+                {% if level.id in user_levels %}
+                    <div class="btn-status btn-active">
+                        <i class="fas fa-check-double"></i> ATIVO
+                    </div>
+                {% else %}
+                    <form method="post" action="{% url 'nivel' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="level_id" value="{{ level.id }}">
+                        <button type="submit" class="btn-status btn-join">
+                            ADERIR <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="spacer"></div>
+
+{% endblock %}

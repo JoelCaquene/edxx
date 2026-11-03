@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}edxx - Home{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    
+    <header class="main-header">
+        <div class="header-top-row">
+            <h1 class="hero-title">Un buon lavoro<br>Vieni a edxx</h1>
+            <div class="logo-container">
+                <img src="{% static 'images/edxx_logo_red.png' %}" alt="edxx" class="edxx-logo-top">
+            </div>
+        </div>
+        
+        <div class="banner-wrapper">
+            <img src="{% static 'images/banner_edxx.png' %}" class="main-banner-img" alt="World Team">
+            <div class="carousel-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="news-ticker">
+        <i class="fas fa-volume-up speaker-icon"></i>
+        <div class="ticker-content">
+            <marquee scrollamount="3">Bem-vindo à edxx, é uma das redes de agências de publicidade mais prestigiadas do mundo. Com Sede em Nova York</marquee>
+        </div>
+    </div>
+
+    <section class="mission-section">
+        <h2 class="section-label">Mission Hall</h2>
+        <div class="edxx-card-gold">
+            <div class="card-left">
+                <span class="card-brand">edxx</span>
+            </div>
+            <div class="card-right">
+                <div class="golden-letter">B</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="actions-grid">
+        <a href="{% url 'saque' %}" class="action-item">
+            <div class="icon-box border-red">
+                <img src="https://cdn-icons-png.flaticon.com/512/1040/1040230.png" class="icon-img-red">
+            </div>
+            <span class="btn-text">Retiradas</span>
+        </a>
+
+        <a href="{% url 'deposito' %}" class="action-item">
+            <div class="icon-box bg-red">
+                <img src="https://cdn-icons-png.flaticon.com/512/1040/1040230.png" class="icon-img-white">
+            </div>
+            <span class="btn-text">Depósito</span>
+        </a>
+
+        <a href="{% url 'equipa' %}" class="action-item">
+            <div class="icon-box">
+                <img src="https://cdn-icons-png.flaticon.com/512/1159/1159642.png" class="icon-img-red">
+            </div>
+            <span class="btn-text">Compartilhe<br>convite</span>
+        </a>
+
+        <a href="{% url 'nivel' %}" class="action-item">
+            <div class="icon-box">
+                <img src="https://cdn-icons-png.flaticon.com/512/1534/1534039.png" class="icon-img-red">
+            </div>
+            <span class="btn-text">Junte-se a nós</span>
+        </a>
+
+        <a href="{% url 'perfil' %}" class="action-item full-width-item">
+            <div class="icon-box">
+                <img src="https://cdn-icons-png.flaticon.com/512/2800/2800168.png" class="icon-img-red">
+            </div>
+            <span class="btn-text">Perfil de companhia</span>
+        </a>
+    </div>
+
+    <a href="{{ whatsapp_link }}" target="_blank" class="floating-support">
+    <div class="support-circle">
+        <img src="https://cdn-icons-png.flaticon.com/512/1250/1250689.png" class="icon-support">
+    </div>
+    <span class="support-label">ATENDIMENTO<br>GERAL</span>
+</a>
+
+<style>
+    .floating-support {
+        position: fixed;
+        bottom: 85px; 
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        z-index: 1000;
+    }
+
+    .support-circle {
+        width: 60px;
+        height: 60px;
+        background-color: #ff0000; /* Cor vermelha para combinar com o seu ícone da imagem */
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        border: 2px solid #ffffff;
+    }
+
+    .icon-support {
+        width: 35px;
+        height: 35px;
+        filter: brightness(0) invert(1); /* Ícone branco */
+    }
+
+    .support-label {
+        /* Fundo removido para não escurecer */
+        color: #333333; /* Cinza escuro legível */
+        font-size: 11px;
+        margin-top: 5px;
+        text-align: center;
+        font-weight: bold;
+        line-height: 1.2;
+        text-shadow: 1px 1px 0px #fff; /* Sombra branca para destacar no fundo claro */
+    }
+</style>
+
+    <nav class="bottom-nav">
+        <a href="{% url 'home' %}" class="nav-tab active">
+            <i class="fas fa-home nav-icon-font"></i>
+            <span>Página inicial</span>
+        </a>
+        <a href="{% url 'tarefa' %}" class="nav-tab">
+            <i class="fas fa-tasks nav-icon-font"></i>
+            <span>Registro de tarefas</span>
+        </a>
+        <a href="{% url 'nivel' %}" class="nav-tab">
+            <i class="fas fa-users nav-icon-font"></i>
+            <span>Junte-se a nós</span>
+        </a>
+        <a href="{% url 'renda' %}" class="nav-tab">
+            <i class="fas fa-chart-line nav-icon-font"></i>
+            <span>renda</span>
+        </a>
+        <a href="{% url 'perfil' %}" class="nav-tab">
+            <i class="fas fa-user nav-icon-font"></i>
+            <span>Meu</span>
+        </a>
+    </nav>
+</div>
+
+<style>
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
+    html, body { 
+        overflow-x: hidden; 
+        width: 100%; 
+        margin: 0; padding: 0; 
+        background-color: #f2f2f2;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    * { box-sizing: border-box; font-family: 'Arial', sans-serif; }
+
+    .app-container {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        background: #fff;
+        min-height: 100vh;
+        position: relative;
+        padding-bottom: 90px;
+    }
+
+    .main-header { padding: 10px 15px 0 15px; }
+    .header-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .hero-title { font-size: 20px; font-weight: 900; color: #000; line-height: 1.1; margin: 0; }
+    .edxx-logo-top { width: 70px; height: auto; }
+
+    .banner-wrapper { position: relative; width: 100%; border-radius: 12px; overflow: hidden; }
+    .main-banner-img { width: 100%; display: block; height: auto; }
+    
+    .carousel-dots {
+        position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+        display: flex; gap: 5px;
+    }
+    .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.5); border-radius: 50%; }
+    .dot.active { background: #fff; width: 12px; border-radius: 4px; }
+
+    .news-ticker { display: flex; align-items: center; padding: 8px 15px; background: #fff; }
+    .speaker-icon { color: #00A3E0; font-size: 14px; margin-right: 8px; }
+    .ticker-content { flex: 1; font-size: 12px; color: #00A3E0; font-weight: 700; }
+
+    /* MISSION HALL DESIGN */
+    .mission-section { padding: 5px 15px; }
+    .section-label { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: #333; }
+    .edxx-card-gold {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 15px 25px; border-radius: 12px; background: #fff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #f0f0f0;
+    }
+    .card-brand { font-size: 16px; font-weight: 700; color: #333; }
+    .golden-letter { font-size: 48px; font-family: 'Times New Roman', serif; color: #D4AF37; font-weight: bold; line-height: 1; }
+
+    /* GRID SEM QUEBRA E COM ESPAÇO OTIMIZADO */
+    .actions-grid { 
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 10px 15px;
+    }
+    .action-item {
+        display: flex; align-items: center; padding: 12px 10px;
+        background: #fff; border-radius: 10px; border: 1px solid #eee;
+        text-decoration: none; color: #333;
+    }
+    .full-width-item { grid-column: span 2; }
+
+    .btn-text { 
+        font-size: clamp(10px, 3.2vw, 13px); 
+        font-weight: 700; 
+        margin-left: 8px; 
+        line-height: 1.2;
+    }
+
+    .icon-box { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .icon-img-red { width: 24px; filter: invert(16%) sepia(89%) saturate(6054%) hue-rotate(354deg) brightness(94%) contrast(106%); }
+    .icon-img-white { width: 22px; filter: brightness(0) invert(1); }
+    
+    .bg-red { background: #E31A1A; border-radius: 8px; }
+    .border-red { border: 2px solid #E31A1A; border-radius: 8px; }
+
+    /* SUPORTE FLUTUANTE */
+    .floating-support {
+        position: fixed; right: 15px; bottom: 80px; 
+        display: flex; flex-direction: column; align-items: center; z-index: 2000;
+        text-decoration: none;
+    }
+    .support-circle {
+        background: #E31A1A; width: 55px; height: 55px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        border: 3px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .icon-support { width: 30px; filter: brightness(0) invert(1); }
+    .support-label { font-size: 9px; font-weight: 900; color: #333; text-align: center; margin-top: 4px; line-height: 1; }
+
+    /* NAV INFERIOR */
+    .bottom-nav {
+        position: fixed; bottom: 0; width: 100%; max-width: 500px;
+        background: #fff; display: flex; justify-content: space-around;
+        padding: 12px 0; border-top: 1px solid #eee; z-index: 1000;
+    }
+    .nav-tab { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; width: 20%; }
+    .nav-icon-font { font-size: 20px; margin-bottom: 4px; }
+    .nav-tab span { font-size: 9px; font-weight: 700; text-align: center; }
+    .nav-tab.active { color: #E31A1A; }
+</style>
+{% endblock %}

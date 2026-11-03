@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Níveis de Função - edxx{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --primary-bg: #f5f7fa;
+        --text-dark: #333;
+        --accent-blue: #00a8ff;
+        --accent-purple: #9c27b0;
+        --success-green: #4cd137;
+        --glass-white: rgba(255, 255, 255, 0.95);
+    }
+
+    body {
+        background-color: var(--primary-bg) !important;
+        font-family: 'Poppins', sans-serif;
+        margin: 0; padding: 0;
+    }
+
+    /* Botão Voltar Estilizado */
+    .btn-back {
+        position: absolute;
+        left: 15px;
+        top: 12px;
+        width: 35px;
+        height: 35px;
+        background: white;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #5d4037;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 10;
+        transition: 0.3s;
+    }
+    .btn-back:active { transform: scale(0.9); }
+
+    .level-container {
+        width: 100%;
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 20px 15px;
+        box-sizing: border-box;
+    }
+
+    /* Título da Página com suporte ao botão voltar */
+    .page-header {
+        position: relative;
+        text-align: center;
+        padding: 15px 0 20px;
+        background: #fff;
+        margin-bottom: 15px;
+        border-radius: 0 0 25px 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.04);
+    }
+    .page-header h1 { 
+        font-size: 1rem; 
+        color: #5d4037; 
+        margin: 0; 
+        font-weight: 800; 
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    /* Lista de Níveis */
+    .level-list { display: flex; flex-direction: column; gap: 12px; }
+
+    /* Card Estilo Imagem Enviada */
+    .level-card {
+        display: flex;
+        align-items: center;
+        background: white;
+        border-radius: 15px;
+        padding: 12px 18px;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        border: 1px solid #f0f0f0;
+        transition: transform 0.2s;
+    }
+
+    /* Cores Dinâmicas dos Cards */
+    .level-card.level-0 { border-left: 6px solid #9e9e9e; }
+    .level-card.level-1 { border-left: 6px solid #00a8ff; }
+    .level-card.level-2 { border-left: 6px solid #3f51b5; }
+    .level-card.level-3 { border-left: 6px solid #2196f3; }
+    .level-card.level-4 { border-left: 6px solid #9c27b0; }
+    .level-card.level-5 { border-left: 6px solid #4caf50; }
+
+    /* Conteúdo Esquerdo */
+    .card-info { flex: 2; }
+    .level-title { 
+        font-size: 1.25rem; 
+        font-weight: 800; 
+        color: #2d3436; 
+        margin-bottom: 2px;
+        display: block;
+    }
+    .daily-task-info {
+        font-size: 0.75rem;
+        color: #636e72;
+        font-weight: 500;
+    }
+    .daily-value { color: var(--accent-blue); font-weight: 700; }
+
+    /* Conteúdo Direito */
+    .card-action-area {
+        flex: 1.5;
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+    }
+
+    .deposit-price {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #2d3436;
+    }
+    .price-unit { font-size: 0.75rem; color: #b2bec3; }
+
+    /* Botão Junte-se Agora / Ativo */
+    .btn-status {
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        letter-spacing: 0.3px;
+    }
+
+    .btn-join {
+        background: linear-gradient(135deg, #00a8ff, #0097e6);
+        color: white;
+        box-shadow: 0 4px 10px rgba(0, 168, 255, 0.25);
+    }
+
+    .btn-active {
+        background: #f1f2f6;
+        color: #2ed573;
+        border: 1px solid #e1e2e6;
+        cursor: default;
+    }
+
+    .duration-badge {
+        font-size: 0.65rem;
+        color: #dfe6e9;
+        margin-top: 2px;
+    }
+</style>
+
+<div class="page-header">
+    <a href="javascript:history.back()" class="btn-back">
+        <i class="fas fa-chevron-left"></i>
+    </a>
+    <h1>TORNA-SE AGENTE</h1>
+</div>
+
+<div class="level-container">
+    <div class="level-list">
+        {% for level in levels %}
+        <div class="level-card level-{{ forloop.counter0 }}">
+            
+            <div class="card-info">
+                <span class="level-title">{{ level.name }}</span>
+                <div class="daily-task-info">
+                    Ganho Diário: <span class="daily-value">{{ level.daily_gain }} KZ</span>
+                </div>
+                <div class="duration-badge">Expira em 365 Dias</div>
+            </div>
+
+            <div class="card-action-area">
+                <div class="deposit-price">
+                    {{ level.deposit_value }} <span class="price-unit">KZ</span>
+                </div>
+
+                {% if level.id in user_levels %}
+                    <div class="btn-status btn-active">
+                        <i class="fas fa-check-circle"></i> ACTIVO
+                    </div>
+                {% else %}
+                    <form method="post" action="{% url 'nivel' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="level_id" value="{{ level.id }}">
+                        <button type="submit" class="btn-status btn-join">
+                            JUNTE-SE AGORA
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div style="height: 100px;"></div>
+
+{% endblock %}

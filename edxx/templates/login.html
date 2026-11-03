@@ -1,0 +1,246 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>edxx - {% trans "Login" %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-purple: #4a00ac; 
+            --btn-gold-start: #ccab66; 
+            --btn-gold-end: #937438;
+            --btn-black: #000000;
+            --input-bg: #f3f7ff; 
+            --logo-red: #ff0000; 
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-purple);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background-color: var(--bg-purple);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* AJUSTE DO TOPO BRANCO */
+        .top-wave-container {
+            width: 100%;
+            background-color: #ffffff;
+            height: 32vh; /* Ajustado para dar espaço à curva */
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        /* SVG REFEITO PARA IMITAR A CURVA DA IMAGEM E A LINHA VERMELHA */
+        .wave-svg {
+            position: absolute;
+            bottom: -58px; /* Encaixe preciso */
+            left: 0;
+            width: 100%;
+            height: 80px;
+        }
+
+        .header-section .logo-text {
+            font-family: 'Noto Serif', serif; 
+            font-size: 80px; 
+            color: var(--logo-red);
+            font-weight: 700;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* CARD DE LOGIN */
+        .login-card {
+            background: #ffffff;
+            width: 90%; 
+            border-radius: 35px; 
+            padding: 40px 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 10;
+            margin-top: 50px; /* Deslocado para baixo da curva */
+        }
+
+        .form-group { position: relative; margin-bottom: 20px; }
+
+        .form-group i.input-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8e8e8e;
+            font-size: 1.2rem;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 18px 20px 18px 60px; 
+            border: none;
+            background-color: var(--input-bg);
+            border-radius: 12px;
+            font-size: 1.1rem; 
+            outline: none;
+        }
+
+        .options-row {
+            display: flex;
+            align-items: center;
+            margin: 20px 0 30px 5px;
+            color: #9ea4b0;
+            font-size: 0.9rem;
+        }
+
+        .options-row input[type="checkbox"] {
+            margin-right: 10px;
+            accent-color: var(--bg-purple); 
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-entrar {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 40px; 
+            background: linear-gradient(to bottom, var(--btn-gold-start), var(--btn-gold-end));
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-registrar {
+            width: 100%;
+            padding: 18px;
+            margin-top: 15px;
+            border-radius: 40px; 
+            background-color: var(--btn-black);
+            color: white;
+            font-size: 1.2rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* ÍCONE DO CAMINHÃO IGUAL À FOTO */
+        .btn-registrar img {
+            width: 40px;
+            margin-left: 10px;
+        }
+
+        .or-divider { text-align: center; color: #d1d1d1; margin: 15px 0; }
+
+        .support-container {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            text-align: center;
+            text-decoration: none;
+            z-index: 20;
+        }
+
+        .support-container img { width: 50px; display: block; margin: 0 auto; }
+        .support-container span { color: white; font-size: 0.8rem; }
+
+        .toggle-password {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #8e8e8e;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="top-wave-container">
+            <div class="header-section">
+                <div class="logo-text">edxx</div>
+            </div>
+            <svg class="wave-svg" viewBox="0 0 500 150" preserveAspectRatio="none">
+                <path d="M0,45 C150,140 350,-40 500,45 L500,0 L0,0 Z" fill="none" stroke="#ff0000" stroke-width="3"></path>
+                <path d="M0,50 C150,150 350,-50 500,50 L500,0 L0,0 Z" fill="#ffffff"></path>
+            </svg>
+        </div>
+
+        <div class="login-card">
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <i class="fa-solid fa-user input-icon"></i>
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    {{ form.password }}
+                    <i class="fa-solid fa-eye-slash toggle-password" id="togglePass"></i>
+                </div>
+                <div class="options-row">
+                    <input type="checkbox" id="remember" checked>
+                    <label for="remember">{% trans "Lembrar ID de Usuário/Senha" %}</label>
+                </div>
+                <button type="submit" class="btn-entrar">
+                    {% trans "Entrando..." %}
+                </button>
+                <div class="or-divider">or</div>
+                <a href="{% url 'cadastro' %}" class="btn-registrar">
+                    {% trans "Registar-se" %}
+                    <img src="https://cdn-icons-png.flaticon.com/512/2554/2554978.png" alt="truck">
+                </a>
+            </form>
+        </div>
+
+        <a href="#" class="support-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/6009/6009132.png" alt="Suporte">
+            <span>{% trans "Suporte Online" %}</span>
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInp = document.querySelector('input[name="username"]');
+            const passInp = document.querySelector('input[name="password"]');
+            if(userInp) userInp.placeholder = '940000000';
+            if(passInp) passInp.placeholder = '..........';
+
+            const togglePass = document.getElementById('togglePass');
+            if(togglePass && passInp) {
+                togglePass.addEventListener('click', function() {
+                    const type = passInp.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passInp.setAttribute('type', type);
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

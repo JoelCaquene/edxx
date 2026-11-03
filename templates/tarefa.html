@@ -1,0 +1,442 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Finances | Central de Tarefas Financeiras{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --fin-cyan: #00f2fe; 
+        --fin-green: #00f5a0;
+        --bg-deep: #061626;
+        --glass: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.12);
+        --accent-red: #ff4d6d;
+        --gold: #f1c40f;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100vh;
+        background: var(--bg-deep) !important;
+    }
+
+    body {
+        background: radial-gradient(circle at top right, #0a2e28, #071f1b, #061626) !important;
+        background-attachment: fixed !important;
+        color: white;
+        font-family: 'Poppins', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .bg-glow {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: 
+            linear-gradient(rgba(0, 245, 160, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 245, 160, 0.02) 1px, transparent 1px);
+        background-size: 25px 25px;
+        pointer-events: none; z-index: 0;
+    }
+
+    .ads-viewport {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        padding: 25px 15px;
+        box-sizing: border-box;
+    }
+
+    .ads-container {
+        width: 100%;
+        max-width: 430px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+
+    /* Cabeçalho */
+    .ads-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 50%;
+        color: var(--fin-green);
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+    .back-link:active { transform: scale(0.9); }
+
+    .header-title {
+        font-size: 1.05rem;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        color: #fff;
+        margin: 0;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    /* Cards de Estatísticas / Contabilização (Acertos e Erros) */
+    .stats-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 12px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .stat-card.correct .stat-icon {
+        background: rgba(0, 245, 160, 0.15);
+        color: var(--fin-green);
+        border: 1px solid rgba(0, 245, 160, 0.3);
+    }
+
+    .stat-card.incorrect .stat-icon {
+        background: rgba(255, 77, 109, 0.15);
+        color: var(--accent-red);
+        border: 1px solid rgba(255, 77, 109, 0.3);
+    }
+
+    .stat-info h5 { margin: 0; font-size: 0.65rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-info span { font-size: 1.1rem; font-weight: 800; color: #fff; }
+
+    /* Card Principal */
+    .ads-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 20px 15px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 15px 45px rgba(0, 245, 160, 0.03);
+        box-sizing: border-box;
+    }
+
+    .ad-step { display: none; }
+    .ad-step.active { display: block; }
+
+    .step-info h3 { font-size: 1.1rem; font-weight: 700; margin: 0 0 4px 0; color: var(--fin-green); }
+    .step-info p { font-size: 0.78rem; color: rgba(255,255,255,0.5); margin: 0 0 20px 0; }
+
+    /* Estilo da Questão Financeira */
+    .question-box-card {
+        background: rgba(0, 0, 0, 0.4);
+        padding: 18px 15px;
+        border-radius: 18px;
+        border: 1px solid var(--glass-border);
+        margin-bottom: 18px;
+    }
+
+    .question-category {
+        display: inline-block;
+        background: rgba(0, 245, 160, 0.1);
+        color: var(--fin-green);
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .question-text {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: #fff;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    /* 4 Opções de Resposta (A, B, C, D) */
+    .options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .option-btn {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--glass-border);
+        padding: 12px 14px;
+        border-radius: 14px;
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+    }
+
+    .option-letter {
+        width: 28px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: var(--fin-green);
+        flex-shrink: 0;
+    }
+
+    .option-btn.selected {
+        border-color: var(--fin-green);
+        background: rgba(0, 245, 160, 0.12);
+    }
+    .option-btn.selected .option-letter {
+        background: var(--fin-green);
+        color: var(--bg-deep);
+    }
+
+    /* Botão Principal */
+    .btn-main {
+        width: 100%;
+        padding: 15px;
+        border-radius: 14px;
+        border: none;
+        background: linear-gradient(135deg, var(--fin-green), var(--fin-cyan));
+        color: var(--bg-deep);
+        font-weight: 800;
+        font-size: 0.88rem;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
+        text-align: center;
+        text-decoration: none;
+        display: block;
+        box-sizing: border-box;
+    }
+    .btn-main.disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* Telas Finais */
+    .status-screen-box {
+        text-align: center;
+        padding: 30px 10px;
+    }
+    .status-screen-box i { font-size: 3.5rem; margin-bottom: 15px; }
+    .status-screen-box h3 { font-size: 1.25rem; font-weight: 800; margin: 0 0 8px 0; }
+    .status-screen-box p { font-size: 0.82rem; color: rgba(255,255,255,0.6); line-height: 1.5; margin: 0 0 25px 0; }
+
+    .btn-outline {
+        display: inline-block;
+        padding: 12px 24px;
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+</style>
+
+<div class="bg-glow"></div>
+
+<div class="ads-viewport">
+    <div class="ads-container">
+        
+        <div class="ads-header">
+            <a href="{% url 'menu' %}" class="back-link">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <h1 class="header-title">Tarefas de Finanças</h1>
+            <div style="width: 42px;"></div>
+        </div>
+
+        <!-- Cards de Contabilização: Acertos e Erros -->
+        <div class="stats-container">
+            <div class="stat-card correct">
+                <div class="stat-icon"><i class="fas fa-check"></i></div>
+                <div class="stat-info">
+                    <h5>Acertos</h5>
+                    <span id="count-correct">{{ acertos_count|default:0 }}</span>
+                </div>
+            </div>
+            <div class="stat-card incorrect">
+                <div class="stat-icon"><i class="fas fa-xmark"></i></div>
+                <div class="stat-info">
+                    <h5>Erros</h5>
+                    <span id="count-incorrect">{{ erros_count|default:0 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ads-card">
+            
+            <!-- Etapa Ativa de Pergunta -->
+            <div id="step-question" class="ad-step active">
+                <div class="step-info">
+                    <h3>Avaliação Financeira</h3>
+                    <p>Responda à questão abaixo. Mesmo errando, sua tarefa será computada com ganho proporcional ao seu nível.</p>
+                </div>
+                
+                <div class="question-box-card">
+                    <span class="question-category" id="q-category">{{ current_question.categoria|default:"Gestão e Investimentos" }}</span>
+                    <p class="question-text" id="q-text">{{ current_question.texto }}</p>
+                </div>
+
+                <div class="options-grid">
+                    <div class="option-btn" data-val="a" onclick="setAnswer('a')">
+                        <div class="option-letter">A</div>
+                        <span id="opt-a-text">{{ current_question.opcao_a }}</span>
+                    </div>
+                    <div class="option-btn" data-val="b" onclick="setAnswer('b')">
+                        <div class="option-letter">B</div>
+                        <span id="opt-b-text">{{ current_question.opcao_b }}</span>
+                    </div>
+                    <div class="option-btn" data-val="c" onclick="setAnswer('c')">
+                        <div class="option-letter">C</div>
+                        <span id="opt-c-text">{{ current_question.opcao_c }}</span>
+                    </div>
+                    <div class="option-btn" data-val="d" onclick="setAnswer('d')">
+                        <div class="option-letter">D</div>
+                        <span id="opt-d-text">{{ current_question.opcao_d }}</span>
+                    </div>
+                </div>
+
+                <button id="btn-submit" class="btn-main disabled" disabled onclick="submitTask()">CONFIRMAR RESPOSTA</button>
+            </div>
+
+            <!-- Etapa Concluída no Dia -->
+            <div id="step-pending" class="ad-step">
+                <div class="status-screen-box">
+                    <i class="fas fa-circle-check" style="color: var(--fin-green);"></i>
+                    <h3 style="color: #fff;">Cota Diária Atingida</h3>
+                    <p>Você completou todas as tarefas financeiras de hoje com sucesso! Seus ganhos diários já foram somados à sua carteira. Volte amanhã.</p>
+                    <a href="{% url 'menu' %}" class="btn-outline">VOLTAR AO MENU</a>
+                </div>
+            </div>
+
+            <!-- Etapa Limite / Assinatura / Depósito -->
+            <div id="step-done" class="ad-step">
+                <div class="status-screen-box">
+                    <i class="fas fa-lock" style="color: var(--gold);"></i>
+                    <h3 style="color: var(--gold);">Acesso Restrito</h3>
+                    <p>Para desbloquear mais tarefas e maximizar seus ganhos diários no seu nível atual, atualize sua conta na plataforma.</p>
+                    <a href="{% url 'menu' %}" class="btn-main">ATUALIZAR CONTA</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedAnswer = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const completedToday = {{ tasks_completed_today|default:0 }};
+        const maxDaily = {{ max_tasks_allowed|default:1 }};
+        if (completedToday >= maxDaily) {
+            switchTab('step-pending');
+        }
+    });
+
+    function switchTab(stepId) {
+        document.querySelectorAll('.ad-step').forEach(s => s.classList.remove('active'));
+        document.getElementById(stepId).classList.add('active');
+    }
+
+    function setAnswer(val) {
+        selectedAnswer = val;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        document.querySelector(`.option-btn[data-val="${val}"]`).classList.add('selected');
+        
+        const btn = document.getElementById('btn-submit');
+        btn.classList.remove('disabled');
+        btn.disabled = false;
+    }
+
+    function submitTask() {
+        const btn = document.getElementById('btn-submit');
+        btn.innerText = "Processando...";
+        btn.disabled = true;
+
+        fetch("{% url 'process_task' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ 
+                resposta: selectedAnswer,
+                question_id: "{{ current_question.id|default:'' }}"
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Atualiza contadores visuais
+                if(document.getElementById('count-correct')) {
+                    document.getElementById('count-correct').innerText = data.acertos_count;
+                }
+                if(document.getElementById('count-incorrect')) {
+                    document.getElementById('count-incorrect').innerText = data.erros_count;
+                }
+
+                if (data.completed_all) {
+                    switchTab('step-pending');
+                } else {
+                    // Recarrega a página para carregar a próxima pergunta sem repetição
+                    window.location.reload();
+                }
+            } else {
+                if (data.redirect_deposit) {
+                    switchTab('step-done');
+                } else {
+                    alert(data.message || data.error || "Erro ao processar tarefa.");
+                    btn.innerText = "CONFIRMAR RESPOSTA";
+                    btn.disabled = false;
+                }
+            }
+        })
+        .catch(() => {
+            alert("Erro de conexão.");
+            btn.innerText = "CONFIRMAR RESPOSTA";
+            btn.disabled = false;
+        });
+    }
+</script>
+{% endblock %}
