@@ -29,14 +29,14 @@ if RENDER_EXTERNAL_HOSTNAME:
     if RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# ADICIONADO: Seus domínios personalizados para produção (Corrigido para .pro)
+# ADICIONADO: Seus domínios personalizados para produção
 ALLOWED_HOSTS.extend([
-    'edxx-medic.com',
-    'www.edxx-medic.com',
+    'edx.quest',
+    'www.edx.quest',
     'edxx-medic.onrender.com'
 ])
 
-# FORÇAR REDIRECIONAMENTO PARA WWW (Isso torna o www o principal)
+# FORÇAR REDIRECIONAMENTO PARA O DOMÍNIO PRINCIPAL (edx.quest)
 if not DEBUG:
     PREPEND_WWW = False
 
