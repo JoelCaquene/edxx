@@ -168,7 +168,7 @@ def approve_deposit(request, deposit_id):
 # --- SAQUE ---
 @login_required
 def saque(request):
-    MIN_WITHDRAWAL_AMOUNT = 2000
+    MIN_WITHDRAWAL_AMOUNT = 1000
     platform_settings = PlatformSettings.objects.first()
     withdrawal_instruction = platform_settings.withdrawal_instruction if platform_settings else ''
     withdrawal_records = Withdrawal.objects.filter(user=request.user).order_by('-created_at')
